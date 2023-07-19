@@ -1,10 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const app = express();
+const path = require('path');
 const https = require('https'); 
+const app = express();
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("client/public"))
-const path = require('path');
 
 
 app.get("/", function(req,res) {
