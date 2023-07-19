@@ -1,3 +1,38 @@
 h1 {
     text-align: center;
+    color: white;
+    font-size: 80px;
+    font-family: "Archivo";
+    margin: 0;
+    padding: 0;
+    padding-top: 15rem;
+
+}
+
+h2 {
+    text-align: center; 
+    color: white;
+    font-size: 35px;
+    font-family: "Archivo";
+    margin: 0;
+    padding: 0;
+    padding-top: 3rem;
+}
+
+h4 {
+    text-align: center; 
+    color: white;
+    font-size: 20px;
+    font-family: "Archivo";
+    margin: 0;
+    padding: 0;
+    padding-top: 3rem;
+}
+
+.main-container {
+    background-image: url(images/dvn1.jpg);
+    background-size: cover;
+    height: 50rem;
+    margin: 0;
+    padding: 0;
 }
