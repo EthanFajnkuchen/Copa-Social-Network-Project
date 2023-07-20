@@ -5,7 +5,7 @@ h1 {
     font-family: "Archivo";
     margin: 0;
     padding: 0;
-    padding-top: 15rem;
+    padding-top: 12rem;
 
 }
 
@@ -19,20 +19,77 @@ h2 {
     padding-top: 3rem;
 }
 
-h4 {
-    text-align: center; 
-    color: white;
-    font-size: 20px;
-    font-family: "Archivo";
-    margin: 0;
-    padding: 0;
-    padding-top: 3rem;
-}
 
 .main-container {
-    background-image: url(images/dvn1.jpg);
-    background-size: cover;
+    width: 100%;
+    position: absolute;
+    background: linear-gradient(45deg,#F17C58, #E94584, #d887d8, #a93f70);
+    background-size: 600% 100%;
+    animation: gradient 5s linear infinite;
+    animation-direction: alternate;
     height: 50rem;
     margin: 0;
     padding: 0;
 }
+
+@keyframes gradient {
+    0% {background-position: 0%}
+    100% {background-position: 100%}
+}
+
+.navbar {
+    padding: 0;
+    padding-top: 2rem;
+  }
+  
+  .navbar-brand {
+    font-family: "Archivo"; 
+    font-size: 4rem;
+    font-weight: bold;
+  }
+  
+  .nav-item {
+    padding: 0 18px;
+    text-align: center;
+    color:white;
+  }
+  
+  .nav-link {
+    font-size: 1.2rem;
+    font-family: "Archivo";
+    color:rgb(211, 211, 211);    
+
+  }
+
+  .nav-link:hover {
+    font-size: 1.2rem;
+    font-family: "Archivo";
+    color:white;  
+  }
+
+  .wrapper-button {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .button {
+    height:3rem;
+    width: 8rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    font-family: "Archivo";
+    font-size: 20px;
+  }
+
+  .button:hover {
+    height:3.6rem;
+    width: 8.6rem;
+    font-family: 30px;
+  }
+  
