@@ -5,7 +5,7 @@ h1 {
     font-family: "Archivo";
     margin: 0;
     padding: 0;
-    padding-top: 12rem;
+    padding-top: 7rem;
 
 }
 
@@ -19,6 +19,14 @@ h2 {
     padding-top: 3rem;
 }
 
+.logo {
+  width:12rem;
+}
+
+.navbar-brand {
+  padding-left: 1rem;
+}
+
 
 .main-container {
     width: 100%;
@@ -27,7 +35,7 @@ h2 {
     background-size: 600% 100%;
     animation: gradient 5s linear infinite;
     animation-direction: alternate;
-    height: 50rem;
+    height: 100vh;
     margin: 0;
     padding: 0;
 }
@@ -40,13 +48,9 @@ h2 {
 .navbar {
     padding: 0;
     padding-top: 2rem;
+    padding-right: 3rem;
   }
   
-  .navbar-brand {
-    font-family: "Archivo"; 
-    font-size: 4rem;
-    font-weight: bold;
-  }
   
   .nav-item {
     padding: 0 18px;
