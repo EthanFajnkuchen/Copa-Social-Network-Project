@@ -31,9 +31,9 @@ h2 {
 .main-container {
     width: 100%;
     position: absolute;
-    background: linear-gradient(45deg,#F17C58, #E94584, #d887d8, #a93f70);
+    background: linear-gradient(39deg,#58aff1, #2b5bbb, #48055f, #7cc0dd, #2b5bbb);
     background-size: 600% 100%;
-    animation: gradient 5s linear infinite;
+    animation: gradient 10s linear infinite;
     animation-direction: alternate;
     height: 100vh;
     margin: 0;
@@ -78,22 +78,36 @@ h2 {
     align-items: center;
   }
 
-  .button {
-    height:3rem;
-    width: 8rem;
+  button {
+    display: flex;
+    align-items: center;
+    font-family: inherit;
+    font-weight: 500;
+    font-size: 17px;
+    padding: 0.8em 1.3em 0.8em 0.9em;
+    color: white;
+    background: rgb(9, 9, 81);
     border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease-in-out;
-    font-family: "Archivo";
-    font-size: 20px;
+    letter-spacing: 0.05em;
+    border-radius: 16px;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
   }
-
-  .button:hover {
-    height:3.6rem;
-    width: 8.6rem;
-    font-family: 30px;
+  
+  button svg {
+    margin-right: 3px;
+    transform: rotate(30deg);
+    transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+  }
+  
+  button span {
+    transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+  }
+  
+  button:hover svg {
+    transform: translateX(5px) rotate(90deg);
+  }
+  
+  button:hover span {
+    transform: translateX(7px);
   }
   
