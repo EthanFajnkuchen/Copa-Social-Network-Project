@@ -6,88 +6,94 @@ h1 {
     margin: 0;
     padding: 0;
     padding-top: 7rem;
-
-
-}
-
-h2 {
-    text-align: center; 
+  }
+  
+  h2 {
+    text-align: center;
     color: white;
     font-size: 35px;
     font-family: "Archivo";
     margin: 0;
     padding: 0;
     padding-top: 3rem;
-}
-
-.header-section {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  min-height: 50vh;
-}
-
-.logo {
-  width:12rem;
-}
-
-.navbar-brand {
-  padding-left: 1rem;
-}
-
-
-.main-container {
+  }
+  
+  .header-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 50vh;
+  }
+  
+  .logo {
+    width: 12rem;
+  }
+  
+  .navbar-brand {
+    padding-left: 1rem;
+  }
+  
+  .main-container {
     width: 100%;
     position: absolute;
-    background: linear-gradient(39deg,#58aff1, #2b5bbb, #48055f, #7cc0dd, #2b5bbb);
+    background: linear-gradient(
+      39deg,
+      #58aff1,
+      #2b5bbb,
+      #48055f,
+      #7cc0dd,
+      #2b5bbb
+    );
     background-size: 600% 100%;
     animation: gradient 10s linear infinite;
     animation-direction: alternate;
     min-height: 100vh;
     margin: 0;
     padding: 0;
-}
-
-@keyframes gradient {
-    0% {background-position: 0%}
-    100% {background-position: 100%}
-}
-
-.navbar {
+  }
+  
+  @keyframes gradient {
+    0% {
+      background-position: 0%;
+    }
+    100% {
+      background-position: 100%;
+    }
+  }
+  
+  .navbar {
     padding: 0;
     padding-top: 2rem;
     padding-right: 3rem;
   }
   
-  
   .nav-item {
     padding: 0 18px;
     text-align: center;
-    color:white;
+    color: white;
   }
   
   .nav-link {
     font-size: 1.2rem;
     font-family: "Archivo";
-    color:rgb(211, 211, 211);    
-
+    color: rgb(211, 211, 211);
   }
-
+  
   .nav-link:hover {
     font-size: 1.2rem;
     font-family: "Archivo";
-    color:white;  
+    color: white;
   }
-
+  
   .wrapper-button {
     margin-top: 3rem;
     display: flex;
     justify-content: center;
     align-items: center;
   }
-
+  
   button {
     display: flex;
     align-items: center;
@@ -100,7 +106,7 @@ h2 {
     border: none;
     letter-spacing: 0.05em;
     border-radius: 16px;
-    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
   
   button svg {
@@ -120,22 +126,19 @@ h2 {
   button:hover span {
     transform: translateX(7px);
   }
-
-
+  
   .middle-container {
     display: flex;
     padding-top: 100vh;
     justify-content: center;
-
   }
-
+  
   .middle-container h1 {
-    color:black;
+    color: black;
     flex: 1;
     width: 30rem;
     font-size: 60px;
     margin-top: 10rem;
-
   }
   .pictures-landing {
     justify-content: end;
@@ -145,6 +148,5 @@ h2 {
     border-radius: 16px;
     margin-right: 5rem;
     margin-top: 10rem;
-
   }
   
