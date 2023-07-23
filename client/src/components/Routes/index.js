@@ -12,7 +12,7 @@ const index = () => {
             <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/profil" element={<Profil />} />
-                    <Route path="/*" element={<Navigate replace to="/" />} />
+                    <Route path="/*" element={<Navigate replace to="/" />} /> //Need to check if it's working
             </Routes>
         </Router>
     );
