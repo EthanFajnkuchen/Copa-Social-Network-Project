@@ -1,6 +1,5 @@
-import React from "react";
-import "./style.css";
-
+import React from 'react';
+import "./../styles/style.css"
 const HeaderSection = () => {
     return (
       <div className="header-section">

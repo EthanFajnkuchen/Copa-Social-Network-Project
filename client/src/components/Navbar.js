@@ -1,6 +1,6 @@
-import React from "react";
-import "./style.css";
-import logo from"./images/logo.png"
+import React from 'react';
+import "./../styles/style.css";
+import logo from "./../images/logo.png"
 
 
 const Navbar = () => {
