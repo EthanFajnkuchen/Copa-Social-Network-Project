@@ -1,4 +1,4 @@
-h1 {
+.header-section-component h1 {
     text-align: center;
     color: white;
     font-size: 80px;
@@ -8,7 +8,7 @@ h1 {
     padding-top: 7rem;
   }
   
-  h2 {
+  .header-section-component h2 {
     text-align: center;
     color: white;
     font-size: 35px;
@@ -18,7 +18,7 @@ h1 {
     padding-top: 3rem;
   }
   
-  .header-section {
+  .header-section-component .header-section {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -87,14 +87,14 @@ h1 {
     color: white;
   }
   
-  .wrapper-button {
+  .header-section-component .wrapper-button {
     margin-top: 3rem;
     display: flex;
     justify-content: center;
     align-items: center;
   }
   
-  button {
+  .header-section-component button {
     display: flex;
     align-items: center;
     font-family: inherit;
@@ -109,44 +109,29 @@ h1 {
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   }
   
-  button svg {
+  .header-section-component button svg {
     margin-right: 3px;
     transform: rotate(30deg);
     transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
   }
   
-  button span {
+  .header-section-component button span {
     transition: transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
   }
   
-  button:hover svg {
+  .header-section-component button:hover svg {
     transform: translateX(5px) rotate(90deg);
   }
   
-  button:hover span {
+  .header-section-component button:hover span {
     transform: translateX(7px);
   }
-  
-  .middle-container {
-    display: flex;
-    padding-top: 100vh;
-    justify-content: center;
+
+  .header-section-component a {
+    color: white
   }
-  
-  .middle-container h1 {
-    color: black;
-    flex: 1;
-    width: 30rem;
-    font-size: 60px;
-    margin-top: 10rem;
-  }
-  .pictures-landing {
-    justify-content: end;
-    width: 24rem;
-    height: 20rem;
-    flex: 2;
-    border-radius: 16px;
-    margin-right: 5rem;
-    margin-top: 10rem;
+  .header-section-component a:hover {
+    text-decoration: none;
+    
   }
   

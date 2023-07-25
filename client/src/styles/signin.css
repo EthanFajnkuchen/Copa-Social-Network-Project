@@ -1,0 +1,134 @@
+.log-component {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.log-component .connection-form {
+    background: white;
+    margin-top: 2.5rem;
+    text-align: center;
+    width: 30rem;
+    min-height: 30rem;
+    margin-right: 1rem;
+    margin-left: 1rem;
+    border-radius: 10px;
+}
+
+
+.log-component button {
+    cursor: pointer;
+    position: relative;
+    padding: 10px 24px;
+    font-size: 18px;
+    color: rgb(0, 0, 0);
+    border: 2px solid rgb(0, 0, 0);
+    border-radius: 34px;
+    background-color: transparent;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.320, 1);
+    overflow: hidden;
+    margin-right: 10px;
+    margin-top: 35px;
+  }
+
+  .log-component button.active {
+    background-color: black;
+    color: white;
+    border-color: black;
+  }
+
+  
+  .log-component button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 50px;
+    height: 50px;
+    border-radius: inherit;
+    scale: 0;
+    z-index: -1;
+    background-color: rgb(0, 0, 0);
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+    
+  }
+  
+  .log-component button:hover::before {
+    scale: 3;
+  }
+  
+  .log-component button:hover {
+    color: #ffffff;
+    scale: 1.1;
+    box-shadow: 0 0px 20px rgb(255, 255, 255);
+  }
+  
+  .log-component button:active {
+    scale: 1;
+  }
+  
+
+.sign-up-component h4 ,.sign-in-component h4 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-family: "Archivo";
+    font-size: 40px;
+}
+
+.sign-up-component input, .sign-in-component input {
+    width: 250px;
+    background-color: #f5f5f5;
+    color: #242424;
+    padding: .15rem .5rem;
+    min-height: 45px;
+    margin-bottom: 0.8rem;
+    border-radius: 4px;
+    outline: none;
+    border: none;
+    line-height: 1.15;
+    box-shadow: 0px 10px 20px -18px;
+
+  }
+  
+  .sign-up-component input:focus, .sign-in-component input:focus {
+    border-bottom: 2px solid #5b5fc7;
+    border-radius: 4px 4px 2px 2px;
+  }
+  
+  .sign-up-component input:hover, .sign-in-component input:hover  {
+    outline: 1px solid lightgrey;
+  }
+
+  .sign-in-component .checkbox-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+  }
+  #checkbox {
+    width: 20px;
+    padding:0;
+    margin: 0;
+  }
+
+  #checkbox:hover {
+    outline: none;
+  }
+
+  #checkbox:focus {
+    border-bottom: none;
+  }
+
+  .checkbox-container label {
+    margin-left: 10px ;
+    margin-bottom: 0.5px;
+  }
+  
+  
+.sign-up-component button.signup {
+    margin-top: 1px;
+}
+
+
