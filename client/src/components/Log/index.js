@@ -29,7 +29,7 @@ const Log = () => {
             <div className='connection-form'>
                 <div className='form-container'>
                     <button onClick={handleModals} id="register" className={activeButton === 'register' ? 'active' : ''}>Sign Up</button>
-                    <button onClick={handleModals} id="login"                      className={activeButton === 'login' ? 'active' : ''}>Sign In</button>
+                    <button onClick={handleModals} id="login"  className={activeButton === 'login' ? 'active' : ''}>Sign In</button>
                     {SignUpModal && <SignUpForm />}
                     {SignInModal && <SignInForm />}
                 </div>

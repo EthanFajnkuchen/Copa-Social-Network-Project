@@ -107,6 +107,7 @@
     letter-spacing: 0.05em;
     border-radius: 16px;
     box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    outline: none;
   }
   
   .header-section-component button svg {
@@ -128,10 +129,10 @@
   }
 
   .header-section-component a {
-    color: white
+    color: white;
+
   }
   .header-section-component a:hover {
     text-decoration: none;
-    
   }
   

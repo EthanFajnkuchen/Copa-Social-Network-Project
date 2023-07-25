@@ -23,7 +23,7 @@ const Navbar = () => {
           >
             <ul className="nav justify-content-center">
               <li className="nav-item">
-                <a className="nav-link" href="">
+                <a className="nav-link" href="/askdjhadh">
                   About Us
                 </a>
               </li>
