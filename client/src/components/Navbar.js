@@ -7,7 +7,7 @@ const Navbar = () => {
     return (
       <nav className="navbar navbar-expand-lg navbar-dark">
         <a className="navbar-brand" href="#">
-          <img className="logo" src={logo}alt="Logo" />
+          <img className="logo" src={logo} alt="Logo" />
         </a>
         <button
           className="navbar-toggler"
