@@ -1,6 +1,6 @@
 import React from 'react';
-import HeaderSection from '../components/HeaderSection';
-import Navbar from '../components/Navbar';
+import HeaderSection from '../components/Home/HeaderSection';
+import Navbar from '../components/Home/Navbar';
 import "./../styles/style.css"
 
 const Home = () => {
