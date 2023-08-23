@@ -4,12 +4,12 @@ import "./../../styles/style.css"
 
 const HeaderSection = () => {
     return (
-      <div class="header-section-component">
+      <div className="header-section-component">
         <div className="header-section">
           <h1>It's happening now !</h1>
           <h2>Don't wait to join the adventure.</h2>
           <div className="wrapper-button">
-          <a href='/signin'>
+          <a href='/signup?source=headers'>
             <button>
               <svg
                 xmlns="http://www.w3.org/2000/svg"

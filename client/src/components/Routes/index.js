@@ -3,6 +3,7 @@ import {BrowserRouter as Router, Routes, Redirect, Route, Switch, Navigate} from
 import Home from "./../../pages/Home";
 import Profile from "./../../pages/Profile";
 import SignIn from '../../pages/SignIn';
+import AdminPage from '../../pages/AdminPage';
 
 
 
@@ -12,7 +13,8 @@ const index = () => {
             <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/profile" element={<Profile />} />
-                    <Route path="/signin" element={<SignIn />} />
+                    <Route path="/signup" element={<SignIn />} />
+                    <Route path="/admin" element={<AdminPage />} />
                     <Route path="/*" element={<Navigate replace to="/" />} /> 
             </Routes>
         </Router>

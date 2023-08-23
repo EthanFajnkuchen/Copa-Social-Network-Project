@@ -1,0 +1,52 @@
+[
+  {
+    "id": "6acba3b3-b13c-49b7-b7b1-ac7174267c80",
+    "firstName": "Admin",
+    "lastName": "Admin",
+    "email": "admin@gmail.com",
+    "pseudo": "admin",
+    "password": "U2FsdGVkX18ayyi3sAOj2/fO9Nt57VY+s8dxq2h1Tq8=",
+    "followers": [],
+    "following": []
+  },
+  {
+    "id": "c11a7175-aa4d-471e-a3db-b9aa70919ad7",
+    "firstName": "Elie",
+    "lastName": "Levy",
+    "email": "ethan.levy@gmail.com",
+    "pseudo": "Elie123",
+    "password": "U2FsdGVkX18bBFAjDOp1ZXQRMZYaOK2xgWFy2+QvBNk=",
+    "followers": [],
+    "following": []
+  },
+  {
+    "id": "67d676d1-1a6a-424b-98d2-f577e31beea0",
+    "firstName": "Elie",
+    "lastName": "Levy",
+    "email": "ethan.levy231@gmail.com",
+    "pseudo": "Elie123add",
+    "password": "U2FsdGVkX1+V7qszj3B1EuLQ9izwBFDSrsmOzLzQalg=",
+    "followers": [],
+    "following": []
+  },
+  {
+    "id": "73ec4d13-9f60-4550-aecd-50a49e8aee04",
+    "firstName": "Elie",
+    "lastName": "Levy",
+    "email": "ethan.levy23231@gmail.com",
+    "pseudo": "Elie123a123dd",
+    "password": "U2FsdGVkX18hCTmWgL8OiHu80S/i/sWgJQVjfPTkGFQ=",
+    "followers": [],
+    "following": []
+  },
+  {
+    "id": "e1669b17-b9d6-4fdd-a5b3-773f723e3ba8",
+    "firstName": "Laura",
+    "lastName": "Benchemoul",
+    "email": "laura.benchemoul@gmail.com",
+    "pseudo": "Laurabnc",
+    "password": "U2FsdGVkX1+3q6ItNXFZASqXREMJUqVLER4hYETN8wU=",
+    "followers": [],
+    "following": []
+  }
+]
