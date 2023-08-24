@@ -98,6 +98,7 @@ app.post("/register", (req, res) => {
         "password": encrypted_password,
         "followers": [],
         "following": [],
+        "avatar": "",
         "last_login": null
     }
 
