@@ -1,15 +1,5 @@
 [
   {
-    "id": "6acba3b3-b13c-49b7-b7b1-ac7174267c80",
-    "firstName": "Admin",
-    "lastName": "Admin",
-    "email": "admin@gmail.com",
-    "pseudo": "admin",
-    "password": "U2FsdGVkX18ayyi3sAOj2/fO9Nt57VY+s8dxq2h1Tq8=",
-    "followers": [],
-    "following": []
-  },
-  {
     "id": "c11a7175-aa4d-471e-a3db-b9aa70919ad7",
     "firstName": "Elie",
     "lastName": "Levy",
@@ -17,7 +7,8 @@
     "pseudo": "Elie123",
     "password": "U2FsdGVkX18bBFAjDOp1ZXQRMZYaOK2xgWFy2+QvBNk=",
     "followers": [],
-    "following": []
+    "following": [],
+    "last_login": null
   },
   {
     "id": "67d676d1-1a6a-424b-98d2-f577e31beea0",
@@ -27,17 +18,8 @@
     "pseudo": "Elie123add",
     "password": "U2FsdGVkX1+V7qszj3B1EuLQ9izwBFDSrsmOzLzQalg=",
     "followers": [],
-    "following": []
-  },
-  {
-    "id": "73ec4d13-9f60-4550-aecd-50a49e8aee04",
-    "firstName": "Elie",
-    "lastName": "Levy",
-    "email": "ethan.levy23231@gmail.com",
-    "pseudo": "Elie123a123dd",
-    "password": "U2FsdGVkX18hCTmWgL8OiHu80S/i/sWgJQVjfPTkGFQ=",
-    "followers": [],
-    "following": []
+    "following": ["c11a7175-aa4d-471e-a3db-b9aa70919ad7"],
+    "last_login": null
   },
   {
     "id": "e1669b17-b9d6-4fdd-a5b3-773f723e3ba8",
@@ -47,6 +29,32 @@
     "pseudo": "Laurabnc",
     "password": "U2FsdGVkX1+3q6ItNXFZASqXREMJUqVLER4hYETN8wU=",
     "followers": [],
-    "following": []
+    "following": [
+      "c11a7175-aa4d-471e-a3db-b9aa70919ad7",
+      "67d676d1-1a6a-424b-98d2-f577e31beea0"
+    ],
+    "last_login": "2023-08-23T20:53:03.984Z"
+  },
+  {
+    "id": "6acba3b3-b13c-49b7-b7b1-ac7174267c80",
+    "firstName": "Admin",
+    "lastName": "Admin",
+    "email": "admin@gmail.com",
+    "pseudo": "admin",
+    "password": "U2FsdGVkX18ayyi3sAOj2/fO9Nt57VY+s8dxq2h1Tq8=",
+    "followers": [],
+    "following": [],
+    "last_login": "2023-08-24T06:57:47.200Z"
+  },
+  {
+    "id": "f216b31b-e753-47d3-8dee-ee94ee391d8b",
+    "firstName": "Matan",
+    "lastName": "Grunhaus",
+    "email": "matangru@gmail.com",
+    "pseudo": "MatanTheKing",
+    "password": "U2FsdGVkX18wG+OLp3GJIHDcvW/8RVwg9L5ypaapLVg=",
+    "followers": [],
+    "following": [],
+    "last_login": "2023-08-24T06:59:08.295Z"
   }
 ]

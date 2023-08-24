@@ -1,9 +1,7 @@
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 import "./../styles/style.css";
-import SignIn from './SignIn';
 import { UidContext } from '../components/Log/AppContext';
-import AdminPage from './AdminPage';
 
 const Profile = () => {
     const uid = useContext(UidContext);

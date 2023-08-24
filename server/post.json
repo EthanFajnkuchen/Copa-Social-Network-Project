@@ -1,0 +1,34 @@
+{
+  "posts": [
+    {
+      "post_id": "fc758d92-98ad-4cb5-8665-9385b0f18207",
+      "username_id": "c11a7175-aa4d-471e-a3db-b9aa70919ad7",
+      "likes": ["67d676d1-1a6a-424b-98d2-f577e31beea0"],
+      "description": "Change this post",
+      "comments": [
+        {
+          "comment_id": "fa2224dc-2b9d-4746-ad85-169c11bce6e5",
+          "username_id": "67d676d1-1a6a-424b-98d2-f577e31beea0",
+          "likes": [],
+          "description": "You can edit comment too!",
+          "comments": [],
+          "time_of_creation": "2023-08-24T09:11:31.737Z",
+          "hidden": "False"
+        }
+      ],
+      "time_of_creation": "2023-08-24T07:33:52.503Z",
+      "images": "[]",
+      "hidden": "False"
+    },
+    {
+      "post_id": "e3332d99-b077-42f7-bd3d-60ea33e26861",
+      "username_id": "c11a7175-aa4d-471e-a3db-b9aa70919ad7",
+      "likes": [],
+      "description": "Hey it's my second post\n",
+      "comments": [],
+      "time_of_creation": "2023-08-24T07:34:26.305Z",
+      "images": "[]",
+      "hidden": "False"
+    }
+  ]
+}

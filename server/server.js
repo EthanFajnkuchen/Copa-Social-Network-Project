@@ -11,7 +11,6 @@ const fs = require("fs");
 const { v4: uuidv4 } = require('uuid');
 const cryptoJS = require('crypto-js');
 app.use(bodyParser.urlencoded({ extended: true }));
-
 app.use(cookieParser());
 const cors = require('cors');
 app.use(cors());
@@ -23,7 +22,12 @@ const KEY = "ASECRET";
 const SECRET_KEY = "TOKEN_SECRET_AUTH";
 
 
-//MIDDLEWARE
+
+/****************************************************
+ *                                                  *
+ *                     USER API                     *
+ *                                                  *
+ ****************************************************/
 
 app.get("*", (req,res,next) => {
     const token = req.cookies.token;
@@ -52,7 +56,6 @@ app.get("/jwtid", (req,res,next) => {
             if (err) {
                 console.log(err);
                 res.send(200).json('no token')
-
             } else {
                 console.log(decodedToken.userId);
                 //next();
@@ -65,9 +68,8 @@ app.get("/jwtid", (req,res,next) => {
         console.log("No token");
         res.status(200).send(false);
     }
-})
+});
 
-//CREATE VIA REGISTER
 app.post("/register", (req, res) => {
     const { firstName, lastName, email, pseudo, password } = req.body;
     console.log(firstName, lastName, email, pseudo, password);
@@ -95,7 +97,8 @@ app.post("/register", (req, res) => {
         "pseudo": pseudo,
         "password": encrypted_password,
         "followers": [],
-        "following": []
+        "following": [],
+        "last_login": null
     }
 
     users.push(user);
@@ -110,24 +113,17 @@ app.post("/register", (req, res) => {
 
 });
 
-// Check if a pseudo already exists
-
 app.get("/check-pseudo/:pseudo", (req, res) => {
     const { pseudo } = req.params;
     const existingPseudo = users.some(user => user.pseudo === pseudo);
     res.json({ exists: existingPseudo });
 });
 
-// Check if an email already exists
 app.get("/check-email/:email", (req, res) => {
     const { email } = req.params;
     const existingEmail = users.some(user => user.email === email);
     res.json({ exists: existingEmail });
 });
-
-
-
-//FOLLOW OTHER USERS
 
 function followUser(followerId, userId) {
     const follower = users.find(user => user.id === followerId);
@@ -145,8 +141,6 @@ function followUser(followerId, userId) {
     userToFollow.followers.push(followerId);
     return true;
 }
-
-// Endpoint to follow a user using PATCH
 app.patch("/api/follow/:followerId/:userId", (req, res) => {
     const { followerId, userId } = req.params;
 
@@ -172,8 +166,6 @@ app.patch("/api/follow/:followerId/:userId", (req, res) => {
     }
 });
 
-//UNFOLLOW OTHER USERS
-
 function unfollowUser(followerId, userId) {
     const follower = users.find(user => user.id === followerId);
     const userToUnfollow = users.find(user => user.id === userId);
@@ -194,7 +186,6 @@ function unfollowUser(followerId, userId) {
     return true;
 }
 
-// Endpoint to unfollow a user using PATCH
 app.patch("/api/unfollow/:followerId/:userId", (req, res) => {
     const { followerId, userId } = req.params;
 
@@ -215,7 +206,6 @@ app.patch("/api/unfollow/:followerId/:userId", (req, res) => {
     }
 });
 
-//DELETE USER
 
 function deleteUser(userId) {
     const userIndex = users.findIndex(user => user.id === userId);
@@ -236,7 +226,6 @@ function deleteUser(userId) {
     return true;
 }
 
-// Endpoint to delete a user using DELETE
 app.delete("/api/delete/:userId", (req, res) => {
     const { userId } = req.params;
 
@@ -257,7 +246,6 @@ app.delete("/api/delete/:userId", (req, res) => {
     }
 });
 
-// Login User
 
 app.post("/api/user/login", (req, res) => {
     console.log("Came in");
@@ -275,9 +263,23 @@ app.post("/api/user/login", (req, res) => {
     }
 
     const tokenExpiration = (rememberMe === "true") ? "10d" : "30m";
-    console.log(tokenExpiration);
 
     const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: tokenExpiration });
+
+    user.last_login = new Date().toISOString();
+
+    // Save the updated user data to the JSON file
+    const usersWithoutUpdatedUser = users.filter(u => u.id !== user.id);
+    const updatedUsers = [...usersWithoutUpdatedUser, user];
+
+    fs.writeFile("users.json", JSON.stringify(updatedUsers, null, 2), err => {
+    if (err) {
+        console.error("Error writing to user.json:", err);
+        return res.status(500).send("Internal Server Error");
+    }
+    });
+  
+
 
     const cookieOptions = {
         httpOnly: true,
@@ -285,7 +287,6 @@ app.post("/api/user/login", (req, res) => {
         maxAge: (rememberMe === "true") ? 10 * 24 * 60 * 60 * 1000 : 30 * 60 * 1000, // 10 days or 30 minutes
 
     };
-
     res.cookie("token", token, cookieOptions);
     res.status(200).json({ message: "Login successful.", user: user.id});
 });
@@ -310,9 +311,374 @@ app.get("/api/user/:userId", (req, res) => {
 
 app.get('/users', (req, res) => {
     res.json(users);
-  });
+});
 
 
+/****************************************************
+ *                                                  *
+ *                     POSTS API                    *
+ *                                                  *
+ ****************************************************/
+
+app.post('/api/post/createpost', (req, res) => {
+    const { description, username_id, images } = req.body;
+  
+    const newPost = {
+      post_id: uuidv4(), // Generating a unique ID using 'uuid'
+      username_id: username_id,
+      likes: [],
+      description: description,
+      comments: [],
+      time_of_creation: new Date().toISOString(),
+      images: images || [], // Including the images array from request body; default to an empty array
+      hidden: "False"
+    };
+  
+    // Read current posts from the JSON file
+    const rawData = fs.readFileSync('./post.json');
+    const db = JSON.parse(rawData);
+    db.posts.push(newPost);
+  
+    // Write the updated posts back to the JSON file
+    fs.writeFileSync('./post.json', JSON.stringify(db, null, 2));
+  
+    res.json({ message: "Post created successfully!", post: newPost });
+});
+
+app.post('/api/post/createcomment', (req, res) => {
+    const { post_id, username_id, description } = req.body;
+
+    const newComment = {
+        comment_id: uuidv4(),
+        username_id: username_id,
+        likes: [],
+        description: description,
+        comments: [],
+        time_of_creation: new Date().toISOString(),
+        hidden: "False"
+    };
+
+    // Load current posts from the JSON file
+    let rawData;
+    let db;
+    try {
+        rawData = fs.readFileSync('./post.json');
+        db = JSON.parse(rawData);
+    } catch (error) {
+        return res.status(500).json({ message: "Error reading posts data", error: error.message });
+    }
+
+    // Find the post by its ID
+    const postIndex = db.posts.findIndex(post => post.post_id === post_id);
+
+    if (postIndex === -1) {
+        return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Add the new comment to the post's comments array
+    db.posts[postIndex].comments.push(newComment);
+
+    // Save the updated posts back to the JSON file
+    try {
+        fs.writeFileSync('./post.json', JSON.stringify(db, null, 2));
+    } catch (error) {
+        return res.status(500).json({ message: "Error writing to posts data", error: error.message });
+    }
+
+    res.json({ message: "Comment added successfully!", comment: newComment });
+});
+
+app.delete('/api/post/deletepost', (req, res) => {
+    const { post_id } = req.body;
+    console.log(req.query);
+    console.log(post_id);
+
+    // Read current posts from the JSON file
+    let rawData;
+    let db;
+    try {
+        rawData = fs.readFileSync('./post.json');
+        db = JSON.parse(rawData);
+    } catch (error) {
+        return res.status(500).json({ message: "Error reading posts data", error: error.message });
+    }
+
+    // Check if the posts property exists on the db object
+    if (!db.posts) {
+        return res.status(404).json({ message: "Post not found 1" });
+    }
+    console.log(db.posts);
+    // Find the index of the post with the given post_id
+    const postIndex = db.posts.findIndex(post => post.post_id === post_id );
+
+    // If the post isn't found, return an error
+    if (postIndex === -1) {
+        return res.status(404).json({ message: "Post not found 2" });
+    }
+
+    // Remove the post from the posts array
+    const deletedPost = db.posts.splice(postIndex, 1);
+
+    // Write the updated posts back to the JSON file
+    try {
+        fs.writeFileSync('./post.json', JSON.stringify(db, null, 2));
+    } catch (error) {
+        return res.status(500).json({ message: "Error writing to posts data", error: error.message });
+    }
+
+    res.json({ message: "Post deleted successfully!", post: deletedPost[0] });
+});
+
+app.delete('/api/post/deletecomment', (req, res) => {
+    const { post_id, comment_id } = req.body;
+
+    // Read current posts from the JSON file
+    let rawData;
+    let db;
+    try {
+        rawData = fs.readFileSync('./post.json');
+        db = JSON.parse(rawData);
+    } catch (error) {
+        return res.status(500).json({ message: "Error reading posts data", error: error.message });
+    }
+
+    // Find the post by its ID
+    const postIndex = db.posts.findIndex(post => post.post_id === post_id);
+    if (postIndex === -1) {
+        return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Find the comment by its ID within the post
+    const commentIndex = db.posts[postIndex].comments.findIndex(comment => comment.comment_id === comment_id);
+    if (commentIndex === -1) {
+        return res.status(404).json({ message: "Comment not found" });
+    }
+
+    // Remove the comment from the comments array
+    const deletedComment = db.posts[postIndex].comments.splice(commentIndex, 1);
+
+    // Save the updated posts back to the JSON file
+    try {
+        fs.writeFileSync('./post.json', JSON.stringify(db, null, 2));
+    } catch (error) {
+        return res.status(500).json({ message: "Error writing to posts data", error: error.message });
+    }
+
+    res.json({ message: "Comment deleted successfully!", comment: deletedComment[0] });
+});
+
+app.patch('/api/post/handlelikepost', (req,res) => {
+    const { post_id, username_id } = req.body;
+
+    // Load current posts from the JSON file
+    let rawData;
+    let db;
+    let add_remove=0;
+    try {
+        rawData = fs.readFileSync('./post.json');
+        db = JSON.parse(rawData);
+    } catch (error) {
+        return res.status(500).json({ message: "Error reading posts data", error: error.message });
+    }
+
+    // Find the post by its ID
+    const postIndex = db.posts.findIndex(post => post.post_id === post_id);
+    if (postIndex === -1) {
+        return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Update the post's like
+    const usernameIndex = db.posts[postIndex].likes.findIndex(username => username === username_id); // Corrected this line
+    if (usernameIndex === -1) {
+        db.posts[postIndex].likes.push(username_id);
+    }
+    else {
+        db.posts[postIndex].likes.splice(usernameIndex, 1);
+        add_remove=1;
+    }
+
+    // Save the updated posts back to the JSON file
+    try {
+        fs.writeFileSync('./post.json', JSON.stringify(db, null, 2));
+    } catch (error) {
+        return res.status(500).json({ message: "Error writing to posts data", error: error.message });
+    }
+    if (add_remove===0){
+        res.json({ message: "like added", post: db.posts[postIndex] });
+    }
+    else{
+        res.json({ message: "like removed", post: db.posts[postIndex] });
+    }
+});
+
+app.patch('/api/post/handlelikecomment', (req, res) => {
+    const { post_id, username_id, comment_id } = req.body;
+
+    let rawData;
+    let db;
+    try {
+        rawData = fs.readFileSync('./post.json');
+        db = JSON.parse(rawData);
+    } catch (error) {
+        return res.status(500).json({ message: "Error reading posts data", error: error.message });
+    }
+
+    // Find the post by its ID
+    const postIndex = db.posts.findIndex(post => post.post_id === post_id);
+    if (postIndex === -1) {
+        return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Find the comment by its ID within the post
+    const commentIndex = db.posts[postIndex].comments.findIndex(comment => comment.comment_id === comment_id);
+    if (commentIndex === -1) {
+        return res.status(404).json({ message: "Comment not found" });
+    }
+
+    // Update the comment's likes
+    const usernameIndex = db.posts[postIndex].comments[commentIndex].likes.findIndex(username => username === username_id);
+    if (usernameIndex === -1) {
+        db.posts[postIndex].comments[commentIndex].likes.push(username_id);
+    } else {
+        db.posts[postIndex].comments[commentIndex].likes.splice(usernameIndex, 1);
+    }
+
+    // Save the updated posts back to the JSON file
+    try {
+        fs.writeFileSync('./post.json', JSON.stringify(db, null, 2));
+    } catch (error) {
+        return res.status(500).json({ message: "Error writing to posts data", error: error.message });
+    }
+
+    res.json({ message: "Comment edited successfully!", comment: db.posts[postIndex].comments[commentIndex] });
+});
+
+app.patch('/api/post/editpost', (req,res) => {
+    const { post_id, description } = req.body;  // Use req.body instead of req.query if you're sending data in the request body
+
+    // Load current posts from the JSON file
+    let rawData;
+    let db;
+    try {
+        rawData = fs.readFileSync('./post.json');
+        db = JSON.parse(rawData);
+    } catch (error) {
+        return res.status(500).json({ message: "Error reading posts data", error: error.message });
+    }
+
+    // Find the post by its ID
+    const postIndex = db.posts.findIndex(post => post.post_id === post_id);
+    if (postIndex === -1) {
+        return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Update the post's description
+    db.posts[postIndex].description = description;
+
+    // Optionally, you can also update other post details here as needed.
+
+    // Save the updated posts back to the JSON file
+    try {
+        fs.writeFileSync('./post.json', JSON.stringify(db, null, 2));
+    } catch (error) {
+        return res.status(500).json({ message: "Error writing to posts data", error: error.message });
+    }
+
+    res.json({ message: "Post edited successfully!", post: db.posts[postIndex] });
+});
+
+app.patch('/api/post/editcomment', (req, res) => {
+    const { post_id, comment_id, description } = req.body;
+
+    // Load current posts from the JSON file
+    let rawData;
+    let db;
+    try {
+        rawData = fs.readFileSync('./post.json');
+        db = JSON.parse(rawData);
+    } catch (error) {
+        return res.status(500).json({ message: "Error reading posts data", error: error.message });
+    }
+
+    // Find the post by its ID
+    const postIndex = db.posts.findIndex(post => post.post_id === post_id);
+    if (postIndex === -1) {
+        return res.status(404).json({ message: "Post not found" });
+    }
+
+    // Find the comment by its ID within the post
+    const commentIndex = db.posts[postIndex].comments.findIndex(comment => comment.comment_id === comment_id);
+    if (commentIndex === -1) {
+        return res.status(404).json({ message: "Comment not found" });
+    }
+
+    // Update the comment's description
+    db.posts[postIndex].comments[commentIndex].description = description;
+
+    // Optionally update other fields, such as last edited timestamp, if required.
+
+    // Save the updated posts back to the JSON file
+    try {
+        fs.writeFileSync('./post.json', JSON.stringify(db, null, 2));
+    } catch (error) {
+        return res.status(500).json({ message: "Error writing to posts data", error: error.message });
+    }
+
+    res.json({ message: "Comment edited successfully!", comment: db.posts[postIndex].comments[commentIndex] });
+});
+
+app.get("/api/postbyid/:userId", (req, res) => {
+const { userId } = req.params;
+
+// Read current posts from the JSON file
+const rawData = fs.readFileSync('./post.json');
+const db = JSON.parse(rawData);
+
+// Filter posts based on the given userId
+const userPosts = db.posts.filter(post => post.username_id === userId);
+
+res.json({ userPosts });
+});
+
+app.get("/api/post/feed/:userId", (req, res) => {
+    const { userId } = req.params;
+
+    // Read users and posts data from JSON files
+    const usersRawData = fs.readFileSync('./users.json');
+    const postsRawData = fs.readFileSync('./post.json');
+    const usersDB = JSON.parse(usersRawData);
+    const postsDB = JSON.parse(postsRawData);
+
+    // Find the user based on the given userId
+    const user = usersDB.find(user => user.id === userId);
+
+    if (!user) {
+        res.status(404).json({ error: "User not found." });
+        return;
+    }
+
+    const followingIds = user.following;
+
+    // Filter posts based on whether the post's username_id is in the following list
+    const userFeed = postsDB.posts.filter(post => followingIds.includes(post.username_id));
+
+    res.json({ userFeed });
+});
+
+app.get("/api/post/allposts", (req, res) => {
+    const rawData = fs.readFileSync('./post.json');
+    const db = JSON.parse(rawData);
+
+    const allPosts = db.posts;
+
+    res.json({ allPosts });
+});
+
+/****************************************************
+ *                                                  *
+ *                    LISTEN API                    *
+ *                                                  *
+ ****************************************************/
 
 //LISTEN VIA PORT 5000
 app.listen(5000, () => {

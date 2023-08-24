@@ -71,6 +71,8 @@ const SignUpForm = () => {
                 pseudo: '',
                 password: ''
             });
+
+            window.location = "/signup?source=navbar";
         } catch (error) {
             console.log('Error registering user:', error);
             if (error.response) {

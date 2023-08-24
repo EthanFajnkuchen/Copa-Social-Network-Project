@@ -3,7 +3,7 @@ import SignUpForm from './SignUpForm';
 import SignInForm from './SignInForm';
 import "./../../styles/signin.css";
 
-const Log = (props) => {
+const Log = () => {
     const [SignUpModal, setSignUpModal] = useState(true);
     const [SignInModal, setSignInModal] = useState(false);
     const [activeButton, setActiveButton] = useState("register");
