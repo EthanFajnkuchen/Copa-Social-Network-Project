@@ -27,11 +27,11 @@
     min-height: 50vh;
   }
   
-  .logo {
+  .navbar-before .logo {
     width: 12rem;
   }
   
-  .navbar-brand {
+  .navbar-before .navbar-brand {
     padding-left: 1rem;
   }
   
@@ -63,25 +63,25 @@
     }
   }
   
-  .navbar {
+  .navbar-before .navbar {
     padding: 0;
     padding-top: 2rem;
     padding-right: 3rem;
   }
   
-  .nav-item {
+  .navbar-before .nav-item {
     padding: 0 18px;
     text-align: center;
     color: white;
   }
   
-  .nav-link {
+  .navbar-before .nav-link {
     font-size: 1.2rem;
     font-family: "Archivo";
     color: rgb(211, 211, 211);
   }
   
-  .nav-link:hover {
+  .navbar-before .nav-link:hover {
     font-size: 1.2rem;
     font-family: "Archivo";
     color: white;

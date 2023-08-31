@@ -294,8 +294,7 @@ app.post("/api/user/login", (req, res) => {
 
 
 app.get("/api/user/logout", (req,res) => {
-    const { pseudo, password } = req.body;
-    res.cookie("token","",{maxAge: 1});
+    res.cookie("token","",{maxAge: -1});
     res.status(200).json({ message: "Logout successful." });
 })
 
@@ -313,6 +312,17 @@ app.get("/api/user/:userId", (req, res) => {
 app.get('/users', (req, res) => {
     res.json(users);
 });
+
+app.get("/search-user/:pseudo", (req, res) => {
+    const { pseudo } = req.params;
+    console.log(pseudo);
+
+    // Search for users in your user database based on the pseudo
+    const searchResults = users.filter(user => user.pseudo.toLowerCase().startsWith(pseudo.toLowerCase()));
+
+    res.json({ users: searchResults });
+});
+
 
 
 /****************************************************
@@ -391,7 +401,6 @@ app.post('/api/post/createcomment', (req, res) => {
 
 app.delete('/api/post/deletepost', (req, res) => {
     const { post_id } = req.body;
-    console.log(req.query);
     console.log(post_id);
 
     // Read current posts from the JSON file
