@@ -1,73 +1,88 @@
-import React, { useState, useEffect, useContext } from 'react';
+// src/components/AdminPage.js
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { UidContext } from '../components/Log/AppContext';
-import '../styles/admin.css'
+import {
+  Table,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  Switch,
+  Typography,
+} from '@mui/material';
 
-function AdminPage() {
+const AdminPage = () => {
   const [users, setUsers] = useState([]);
-
-  const uid = useContext(UidContext);
+  const [adminFeatures, setAdminFeatures] = useState({ feature1: false, feature2: true });
 
   useEffect(() => {
-    axios.get('http://localhost:5000/users')
-      .then(response => {
-        setUsers(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching users:', error);
-      });
+    // Fetch the list of users from the server
+    axios.get('http://localhost:5000/users').then((response) => {
+      setUsers(response.data.users);
+    });
+
+    // Fetch admin features from the server
+    axios.get('/api/user/admin/getfeatures').then((response) => {
+      setAdminFeatures(response.data);
+    });
   }, []);
 
-  const handleDeleteUser = (userId) => {
-    axios.delete(`http://localhost:5000/api/delete/${userId}`)
-      .then(response => {
-        if (response.data === 'User deleted successfully.') {
-          setUsers(users.filter(user => user.id !== userId));
-        }
-      })
-      .catch(error => {
-        console.error('Error deleting user:', error);
-      });
+  const handleFeatureChange = (featureName) => (event) => {
+    // Send a request to the server to enable/disable the feature
+    axios.patch('http://localhost:5000/api/user/admin/changefeatures', { [featureName]: event.target.checked }).then(() => {
+      setAdminFeatures((prevFeatures) => ({
+        ...prevFeatures,
+        [featureName]: event.target.checked,
+      }));
+    });
   };
 
-
   return (
-    uid === "6acba3b3-b13c-49b7-b7b1-ac7174267c80" ? (
-      <div className='admin-page-component'>
-        <div>
-          <h1>Welcome on the admin page!</h1>
-          <table className='styled-table'>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Pseudo</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map(user => (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.firstName}</td>
-                  <td>{user.lastName}</td>
-                  <td>{user.email}</td>
-                  <td>{user.pseudo}</td>
-                  <td>
-                    <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    ) : (
-      <h1>Only admin have access to this page.</h1>
-    )
+    <div>
+      <Typography variant="h4">Admin Page</Typography>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>User ID</TableCell>
+              <TableCell>First Name</TableCell>
+              <TableCell>Last Name</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>Pseudo</TableCell>
+              <TableCell>Feature 1</TableCell>
+              <TableCell>Feature 2</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {users.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell>{user.id}</TableCell>
+                <TableCell>{user.firstName}</TableCell>
+                <TableCell>{user.lastName}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.pseudo}</TableCell>
+                <TableCell>
+                  <Switch
+                    checked={adminFeatures.feature1}
+                    onChange={handleFeatureChange('feature1')}
+                    disabled={!adminFeatures.feature2}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Switch
+                    checked={adminFeatures.feature2}
+                    onChange={handleFeatureChange('feature2')}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
   );
-}
+};
 
 export default AdminPage;

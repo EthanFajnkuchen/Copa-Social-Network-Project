@@ -43,7 +43,7 @@ const NavbarAfter = () => {
         <AppBar position="static" style={{ backgroundColor: 'white', boxShadow: 'none', height: "5rem"}}>
             <Toolbar style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <a href="/profile">
+                    <a href="/feed">
                         <img className="logo" src={logo} alt="Logo" style={{ width: "7rem", marginLeft : "3rem" }} />
                     </a>
                 </div>

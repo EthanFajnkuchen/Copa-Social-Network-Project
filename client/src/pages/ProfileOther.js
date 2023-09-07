@@ -11,6 +11,8 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import IconButton from '@mui/material/IconButton';
 import { red } from '@mui/material/colors';
 import Button from '@mui/material/Button';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+
 
 
 
@@ -147,8 +149,8 @@ const ProfileOther = () => {
                             </Typography>
 
                             <div style={{ marginTop: '20px' }}>
-                                <IconButton  onClick={() => handleLikeToggle(post.post_id)} style={post.likes.length > 0 ? { color: red[500] , marginLeft: "23px", outline: "none"} : {marginLeft: "23px", outline: "none"}}aria-label="like post">
-                                <FavoriteIcon />
+                                <IconButton  onClick={() => handleLikeToggle(post.post_id)} style={post.likes.includes(uid) > 0 ? { color: red[500] , marginLeft: "23px", outline: "none"} : {marginLeft: "23px", outline: "none"}}aria-label="like post">
+                                <EmojiEventsIcon />
                                 </IconButton>
                                 <Typography variant="caption">{post.likes.length} Likes</Typography>
                             </div>

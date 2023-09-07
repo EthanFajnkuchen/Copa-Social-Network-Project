@@ -69,10 +69,6 @@ const Search = () => {
     }
   };
 
-  if (!uid) {
-    navigate('/signup');
-    return null;
-  }
 
   if (uid === "6acba3b3-b13c-49b7-b7b1-ac7174267c80") {
     navigate('/admin');

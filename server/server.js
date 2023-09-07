@@ -10,7 +10,8 @@ const users = require("./users.json");
 const fs = require("fs");
 const { v4: uuidv4 } = require('uuid');
 const cryptoJS = require('crypto-js');
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({limit: '10mb'}))
+app.use(bodyParser.urlencoded({ limit: '10mb' , extended: true }));
 app.use(cookieParser());
 const cors = require('cors');
 app.use(cors());
@@ -98,6 +99,7 @@ app.post("/register", (req, res) => {
         "password": encrypted_password,
         "followers": [],
         "following": [],
+        "communities": [],
         "avatar": "",
         "last_login": null
     }
@@ -292,6 +294,33 @@ app.post("/api/user/login", (req, res) => {
     res.status(200).json({ message: "Login successful.", user: user.id});
 });
 
+app.patch("/api/user/avatar/:userId", (req, res) => {
+    const { userId } = req.params;
+    const { avatar } = req.body;
+
+    if (!userId) {
+        return res.status(400).send("Missing userId or avatar.");
+    }
+
+    const user = users.find(user => user.id === userId);
+
+    if (!user) {
+        return res.status(404).send("User not found.");
+    }
+
+    if (Buffer.byteLength(avatar, 'utf8') > 10485760) { // 10 MB in bytes
+        return res.status(413).send("Payload Too Large");
+    }
+
+    user.avatar = avatar;
+
+    fs.writeFile("users.json", JSON.stringify(users), err => {
+        if (err) throw err;
+        console.log("Done writing");
+        res.send("User avatar updated successfully.");
+    });
+});
+
 
 app.get("/api/user/logout", (req,res) => {
     res.cookie("token","",{maxAge: -1});
@@ -303,15 +332,44 @@ app.get("/api/user/:userId", (req, res) => {
     const user = users.find(user => user.id === userId);
     
     if (user) {
-        res.status(200).json({ user });
+        // Include feature1 and feature2 fields from the admin user
+        const adminUser = users.find(user => user.id === '6acba3b3-b13c-49b7-b7b1-ac7174267c80' || user.pseudo === 'admin');
+        const { feature1, feature2, ...userData } = user;
+        
+        if (adminUser) {
+            userData.feature1 = adminUser.feature1;
+            userData.feature2 = adminUser.feature2;
+        }
+        
+        res.status(200).json({ user: userData });
     } else {
         res.status(404).json({ message: "User not found." });
     }
 });
 
 app.get('/users', (req, res) => {
-    res.json(users);
+  // Read the user data from the file every time the endpoint is called
+  fs.readFile('users.json', 'utf8', (err, data) => {
+    if (err) {
+      console.error('Error reading user file:', err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+    const users = JSON.parse(data);
+
+    // Find the admin user by ID
+
+    // Exclude the admin user from the filtered users
+    const filteredUsers = users.filter(user => user.id !== '6acba3b3-b13c-49b7-b7b1-ac7174267c80');
+
+    // Include feature1 and feature2 fields from the admin user
+
+      res.json({ users: filteredUsers});
+
+  });
 });
+
+  
 
 app.get("/search-user/:pseudo", (req, res) => {
     const { pseudo } = req.params;
@@ -322,6 +380,74 @@ app.get("/search-user/:pseudo", (req, res) => {
 
     res.json({ users: searchResults });
 });
+
+app.get("/api/user/:userId/followers", (req, res) => {
+    const { userId } = req.params;
+    const user = users.find(user => user.id === userId);
+    if (user) {
+        const followerUsers = users.filter(u => user.followers.includes(u.id));
+        res.status(200).json({ followers: followerUsers });
+    } else {
+        res.status(404).json({ message: "User not found." });
+    }
+});
+
+app.get("/api/user/:userId/following", (req, res) => {
+    const { userId } = req.params;
+    const user = users.find(user => user.id === userId);
+    if (user) {
+        const followingUsers = users.filter(u => user.following.includes(u.id));
+        res.status(200).json({ following: followingUsers });
+    } else {
+        res.status(404).json({ message: "User not found." });
+    }
+});
+
+app.patch('/api/user/admin/changefeatures', (req, res) => {
+
+    const { feature1, feature2 } = req.body;
+    console.log(feature1, feature2);
+    // Load the users from the JSON file
+    const usersPath = path.join(__dirname, 'users.json');
+    const usersData = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
+    
+    // Find the admin user in the data
+    const adminUserIndex = usersData.findIndex(user => user.id === '6acba3b3-b13c-49b7-b7b1-ac7174267c80');
+  
+    if (adminUserIndex === -1) {
+      return res.status(404).json({ message: 'Admin user not found.' });
+    }
+  
+    // Update the admin user's features
+    if (feature1 !== undefined) {
+      usersData[adminUserIndex].feature1 = feature1;
+    }
+  
+    if (feature2 !== undefined) {
+      usersData[adminUserIndex].feature2 = feature2;
+
+    }
+  
+    // Write the updated data back to the JSON file
+    fs.writeFileSync(usersPath, JSON.stringify(usersData, null, 2), 'utf-8');
+  
+    res.status(200).json({ message: 'Admin features updated successfully.' });
+  });
+
+app.get('/api/user/admin/getfeatures', (req, res) => {
+    const usersPath = path.join(__dirname, 'users.json');
+    const usersData = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
+  
+    const adminUser = usersData.find(user => user.id === '6acba3b3-b13c-49b7-b7b1-ac7174267c80');
+  
+    if (!adminUser) {
+      return res.status(404).json({ message: 'Admin user not found.' });
+    }
+  
+    const { feature1, feature2 } = adminUser;
+    res.json({ feature1, feature2 });
+  });
+    
 
 
 
@@ -341,7 +467,7 @@ app.post('/api/post/createpost', (req, res) => {
       description: description,
       comments: [],
       time_of_creation: new Date().toISOString(),
-      images: images || [], // Including the images array from request body; default to an empty array
+      images: images || "", // Including the images array from request body; default to an empty array
       hidden: "False"
     };
   
@@ -670,10 +796,15 @@ app.get("/api/post/feed/:userId", (req, res) => {
     const followingIds = user.following;
 
     // Filter posts based on whether the post's username_id is in the following list
-    const userFeed = postsDB.posts.filter(post => followingIds.includes(post.username_id));
+    const userPosts = postsDB.posts.filter(post => post.username_id === userId);
+    const followingPosts = postsDB.posts.filter(post => followingIds.includes(post.username_id));
 
-    res.json({ userFeed });
+    // Merge the userPosts and followingPosts arrays
+    const combinedFeed = [...userPosts, ...followingPosts];
+
+    res.json({ combinedFeed });
 });
+    
 
 app.get("/api/post/allposts", (req, res) => {
     const rawData = fs.readFileSync('./post.json');
@@ -683,6 +814,220 @@ app.get("/api/post/allposts", (req, res) => {
 
     res.json({ allPosts });
 });
+
+app.get("/api/post/:postId/comments", (req, res) => {
+    const { postId } = req.params;
+
+    const rawData = fs.readFileSync('./post.json');
+    const db = JSON.parse(rawData);
+
+    const post = db.posts.find(post => post.post_id === postId);
+
+    if (post) {
+        const comments = post.comments || [];
+        res.status(200).json({ comments });
+    } else {
+        res.status(404).json({ message: "Post not found." });
+    }
+});
+
+
+
+/****************************************************
+ *                                                  *
+ *               COMMUNITIES API                    *
+ *                                                  *
+ ****************************************************/
+
+const readJsonFile = (fileName) => {
+    return new Promise((resolve, reject) => {
+      fs.readFile(fileName, 'utf8', (err, data) => {
+        if (err) return reject(err);
+        resolve(JSON.parse(data || '[]'));
+      });
+    });
+  };
+  
+const writeJsonFile = (fileName, data) => {
+return new Promise((resolve, reject) => {
+    fs.writeFile(fileName, JSON.stringify(data), (err) => {
+    if (err) return reject(err);
+    resolve();
+    });
+});
+};
+
+app.post("/api/community/createcommunity", async (req, res) => {
+    try {
+        const { name, participant } = req.body;
+
+        if (!name || !participant) {
+        return res.status(400).json({ error: "Both name and an initial participant are required" });
+        }
+
+        const communities = await readJsonFile('communities.json');
+        const users = await readJsonFile('users.json');
+
+        const newId = uuidv4();
+        const newCommunity = {
+        id: newId,
+        name,
+        participants: [participant],
+        posts: []
+        };
+
+        const userIndex = users.findIndex(user => user.id === participant);
+        if (userIndex !== -1) {
+        users[userIndex].communities.push(newId);
+        }
+
+        communities.push(newCommunity);
+
+        await writeJsonFile('communities.json', communities);
+        await writeJsonFile('users.json', users);
+
+        return res.status(201).json(newCommunity);
+    } catch (err) {
+        return res.status(500).json({ error: "Server Error" });
+    }
+});
+
+app.patch("/api/community/adduser", async (req, res) => {
+    try {
+        const { communityId, userId } = req.body;
+
+        if (!communityId || !userId) {
+        return res.status(400).json({ error: "Both communityId and userId are required" });
+        }
+
+        const communities = await readJsonFile('communities.json');
+        const users = await readJsonFile('users.json');
+
+        const communityIndex = communities.findIndex(community => community.id === communityId);
+
+        if (communityIndex === -1) {
+        return res.status(404).json({ error: "Community not found" });
+        }
+
+        // Check if the user is already a part of the community
+        if (communities[communityIndex].participants.includes(userId)) {
+            return res.status(400).json({ error: "User is already a part of this community" });
+        }
+
+        communities[communityIndex].participants.push(userId);
+
+        const userIndex = users.findIndex(user => user.id === userId);
+        if (userIndex !== -1) {
+        users[userIndex].communities.push(communityId);
+        }
+
+        await writeJsonFile('communities.json', communities);
+        await writeJsonFile('users.json', users);
+
+        return res.status(200).json({ message: "User added successfully", community: communities[communityIndex] });
+    } catch (err) {
+        return res.status(500).json({ error: "Server Error" });
+    }
+});
+
+app.patch("/api/community/addpost", async (req, res) => {
+    try {
+      const { communityId, postId } = req.body;
+  
+      if (!communityId || !postId) {
+        return res.status(400).json({ error: "Both communityId and postId are required" });
+      }
+  
+      const communities = await readJsonFile('communities.json');
+  
+      const communityIndex = communities.findIndex(community => community.id === communityId);
+  
+      if (communityIndex === -1) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+  
+      // Check if the post is already part of the community
+      if (communities[communityIndex].posts.includes(postId)) {
+        return res.status(400).json({ error: "Post is already part of this community" });
+      }
+  
+      communities[communityIndex].posts.push(postId);
+  
+      await writeJsonFile('communities.json', communities);
+  
+      return res.status(200).json({ message: "Post added successfully", community: communities[communityIndex] });
+    } catch (err) {
+      return res.status(500).json({ error: "Server Error" });
+    }
+});
+
+app.patch("/api/community/removeuser", async (req, res) => {
+    try {
+      const { communityId, userId } = req.body;
+  
+      if (!communityId || !userId) {
+        return res.status(400).json({ error: "Both communityId and userId are required" });
+      }
+  
+      const communities = await readJsonFile('communities.json');
+      const users = await readJsonFile('users.json');
+  
+      const communityIndex = communities.findIndex(community => community.id === communityId);
+  
+      if (communityIndex === -1) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+  
+      // Check if the user is a part of the community
+      const userIndexInCommunity = communities[communityIndex].participants.indexOf(userId);
+      
+      if (userIndexInCommunity === -1) {
+        return res.status(400).json({ error: "User is not a part of this community" });
+      }
+  
+      // Remove the user from the community
+      communities[communityIndex].participants.splice(userIndexInCommunity, 1);
+  
+      // Remove the community from the user's list of communities
+      const userIndex = users.findIndex(user => user.id === userId);
+      if (userIndex !== -1) {
+        const communityIndexInUser = users[userIndex].communities.indexOf(communityId);
+        if (communityIndexInUser !== -1) {
+          users[userIndex].communities.splice(communityIndexInUser, 1);
+        }
+      }
+  
+      await writeJsonFile('communities.json', communities);
+      await writeJsonFile('users.json', users);
+  
+      return res.status(200).json({ message: "User removed successfully", community: communities[communityIndex] });
+    } catch (err) {
+      return res.status(500).json({ error: "Server Error" });
+    }
+});
+
+app.get("/api/community/searchbyId/:id", async (req, res) => {
+    try {
+      const { id } = req.params; // Extracting the community ID from request parameters
+      if (!id) {
+        return res.status(400).json({ error: "Community ID is required" });
+      }
+  
+      const communities = await readJsonFile('communities.json'); // Reading the communities.json file
+      const community = communities.find(community => community.id === id); // Find the community by its ID
+  
+      if (!community) {
+        return res.status(404).json({ error: "Community not found" });
+      }
+  
+      return res.status(200).json({ community }); // Return the community object if found
+  
+    } catch (err) {
+      return res.status(500).json({ error: "Server Error" });
+    }
+  });
+  
+  
 
 /****************************************************
  *                                                  *

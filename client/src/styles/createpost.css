@@ -1,27 +1,32 @@
-
-img {
+.Feed-component *{
+    margin:0;
+    padding:0;
+    font-family: Arial, Helvetica, sans-serif;
+    /*   overflow-x:hidden; */
+}
+.Feed-component img {
     vertical-align: middle;
     border-style: none;
 }
-.content{
+.Feed-component .content{
     width:100%;
     height: 100%;
     margin:5px auto;
 
 }
 
-.center{
+.Feed-component .center{
     margin:50px 30%;
 }
 
-.form{
+.Feed-component .form{
 }
 
-.form-body{
+.Feed-component .form-body{
     border-radius: 50px;
 }
 
-.form-submit{
+.Feed-component .form-submit{
     width:100%;
     display:block;
     color:gray;
@@ -31,14 +36,14 @@ img {
 }
 
 
-.form-body img{
+.Feed-component .form-body img{
     float:left;
     width:45px;
     position:relative;
     left:-55px;
 }
 
-.post{
+.Feed-component .post{
     /*   height:300px; */
     margin:50px -65px;
     border-radius:5px;
@@ -53,7 +58,7 @@ img {
     border-radius: 6px;
 }
 
-.post .info{
+.Feed-component .post .info{
     position:relative;
     top:15px;
     margin: 10px 0;
@@ -63,8 +68,8 @@ img {
     box-sizing: border-box;
     display: flex;
 }
-.post .info img{width:45px;}
-.post .info p{
+.Feed-component .post .info img{width:45px;}
+.Feed-component .post .info p{
     position:relative;
     top:-40px;
     left:60px;
@@ -72,32 +77,32 @@ img {
     font-family:Arial,Helvetica,sans-serif;
 }
 
-.post-body{
+.Feed-component .post-body{
     padding:15px;
     margin:10px 0;
     border-radius:8px;
 
 }
 
-.post-body p{
+.Feed-component .post-body p{
     font-size:20px;
     margin:5px 0;
 }
 
-.post-body img,
-.post-body video{
+.Feed-component .post-body img,
+.Feed-component .post-body video{
     text-align:center;
     width:100%;
     height:100%;
     border-radius:8px;
 }
-.bold {
+.Feed-component .bold {
     font-style: normal;
     font-weight: 700;
     font-size: 13px;
 }
 
-.post .post-bottom {
+.Feed-component .post .post-bottom {
     /* text-align: center; */
     padding: 5px;
     /* margin: 0; */
@@ -108,26 +113,26 @@ img {
 
 
 
-.post .post-bottom i{
+.Feed-component .post .post-bottom i{
     margin:0 10px;
     padding:5px 5%;
     border-radius:40px;
     transition:.5s;
 }
 
-.post .post-bottom i:hover{
+.Feed-component .post .post-bottom i:hover{
     background:#F0FFFF;
     color:#8DEBFF;
 }
 
 /* NEW POST */
 
-.liked {
+.Feed-component .liked {
     color: red;
     font-weight: bold;
 }
 
-.comment{
+.Feed-component .comment{
     position:absolute;
     top:0;
     background:rgba(242, 243, 245, 0.40);
@@ -136,11 +141,11 @@ img {
     min-height:150%;
 }
 
-.block{
+.Feed-component .block{
     display:block;
 }
 
-.comment-box {
+.Feed-component .comment-box {
     position: absolute;
     top: 0%;
     /* left: 5%; */
@@ -153,7 +158,7 @@ img {
     width: 40%;
 }
 
-.comment-header{
+.Feed-component .comment-header{
     padding:10px;
     border-bottom:1px solid gray;
     border-radius:5px 5px 0px 0px;
@@ -161,20 +166,20 @@ img {
 
 }
 
-.comment-header h3{
+.Feed-component .comment-header h3{
     width:80%;
     float:left;
     text-align:center;
 }
 
-.comment-header i{
+.Feed-component .comment-header i{
     border-radius:50px;
     background:#e7e7e7;
     padding:5px 8px;
     font-size:1.5rem;
 }
 
-.comment-body textarea{
+.Feed-component .comment-body textarea{
     min-width:93%;
     max-width:94%;
     margin:10px 1%;
@@ -186,11 +191,11 @@ img {
     max-height:250px;
 }
 
-.comment-body textarea:focus{
+.Feed-component .comment-body textarea:focus{
     border:none;
 }
 
-.button-send{
+.Feed-component .button-send{
     width:100%;
     margin:20px 4px;
     background:#e7e7e7;
@@ -200,16 +205,16 @@ img {
     text-align:center;
 }
 
-.button-send:hover{
+.Feed-component .button-send:hover{
     background:rgba(218,218,218,0.50);
 }
 
-.comment-bottom{
+.Feed-component .comment-bottom{
     margin:10px;
     padding:2px;
 }
 
-.comment-bottom i{
+.Feed-component .comment-bottom i{
     margin-left:15px;
     background:whitesmoke;
     padding:6px 5%;
@@ -218,13 +223,13 @@ img {
     text-align:center;
 }
 
-.comment-bottom i:hover{
+.Feed-component .comment-bottom i:hover{
     background:#EF78;
     color:#f0f0f0;
 }
 
 
-.comment-header .message{
+.Feed-component .comment-header .message{
     /*   display:none; */
     position: absolute;
     top:0;
@@ -236,46 +241,46 @@ img {
     text-align:center;
 }
 
-.icon input[type="file"]{
+.Feed-component .icon input[type="file"]{
     display:none;
 }
 
 @media screen and (max-width:562px){
-    .comment-box{
+    .Feed-component .comment-box{
         width:80%;
     }
 }
 
 /* ICON STYLE */
-.fas{
+.Feed-component .fas{
     font-size:1.3rem;
 }
 
 
-.fa-share{
+.Feed-component .fa-share{
     color:yellowgreen;
 }
 
-.fa-comment{
+.Feed-component .fa-comment{
     color:#FFD32D;
 }
 
-.fa-photo-video{
+.Feed-component .fa-photo-video{
     color:green;
 }
 
-.fa-music{
+.Feed-component .fa-music{
     color:orange;
 }
 
-.fa-file-upload{
+.Feed-component .fa-file-upload{
     color:#6AC8FF;
 }
-.liked {
+.Feed-component .liked {
     color: #ff0000;
 }
 
-.likedcomment{
+.Feed-component .likedcomment{
     color: #ff0000;
 
 }

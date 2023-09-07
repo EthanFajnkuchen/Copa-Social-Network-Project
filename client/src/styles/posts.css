@@ -1,4 +1,4 @@
-body {
+.posts-component body {
     margin: 0;
     padding: 0;
     font-family: "source sans pro", sans-serif;
@@ -9,12 +9,12 @@ body {
     line-height: 16px;
     padding: 0 20px;
 }
-.width {
+.posts-component .width {
     background: #fff;
     box-sizing: border-box;
     max-width: 375px;
 }
-header {
+.posts-component header {
     display: flex;
     height: 67px;
     justify-content: space-between;
@@ -25,7 +25,7 @@ header {
     margin-top: 20px;
 }
 
-section {
+.posts-component section {
     background: #fff;
     box-sizing: border-box;
     max-width: 375px;
@@ -33,57 +33,57 @@ section {
     border: 1px solid #c6c6c6;
     border-radius: 6px;
 }
-section:nth-child(1) {
+.posts-component section:nth-child(1) {
     color: red;
 }
 
-.img-avtar {
+.posts-component .img-avtar {
     height: 100%;
     width: auto;
 }
-.img-circled {
+.posts-component .img-circled {
     border-radius: 50%;
 }
-.post-details {
+.posts-component .post-details {
     height: 55px;
     padding: 10px;
     box-sizing: border-box;
     display: flex;
 }
-.user {
+.posts-component .user {
     display: block;
     margin-left: 7px;
 }
-.bold {
+.posts-component .bold {
     font-style: normal;
     font-weight: 700;
     font-size: 13px;
 }
-.post-container {
+.posts-component .post-container {
     width: 100%;
 }
-.img-post {
+.posts-component .img-post {
     width: 100%;
 }
-.post-desc {
+.posts-component .post-desc {
     padding: 21px 0 16px 10px;
 }
-.logo {
+.posts-component .logo {
     height: 23px;
     width: 23px;
     margin-right: 20px;
     font-size: 150%;
 }
-.icon-button {
+.posts-component .icon-button {
     cursor: pointer;
     margin: 5px;
     font-size: 24px;
 }
-.image-container {
+.posts-component .image-container {
     position: relative;
 }
 
-.image-navigation {
+.posts-component .image-navigation {
     position: absolute;
     top: 50%;
     width: 100%;
@@ -91,7 +91,7 @@ section:nth-child(1) {
     justify-content: space-between;
 }
 
-.icon-button {
+.posts-component .icon-button {
     cursor: pointer;
     margin: 5px;
     font-size: 24px;
@@ -100,10 +100,10 @@ section:nth-child(1) {
     padding: 5px;
 }
 
-.prev-button {
+.posts-component .prev-button {
     left: 0;
 }
 
-.next-button {
+.posts-component .next-button {
     right: 0;
 }

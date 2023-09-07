@@ -33,7 +33,6 @@ const SignInForm = () => {
             console.log('Login successful:', response.data.token);
 
             setIncorrectCredentials(false);
-            alert("Welcome on the app!"); 
             window.location = '/profile'; 
 
             // Handle successful login, e.g., redirect to a dashboard page

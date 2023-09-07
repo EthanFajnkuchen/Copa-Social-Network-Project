@@ -7,10 +7,11 @@ import AdminPage from '../../pages/AdminPage';
 import Feed from '../../pages/Feed';
 import Search from '../../pages/Search';
 import ProfileOther from '../../pages/ProfileOther';
-import { UidContext } from '../Log/AppContext';
+import Testimonial from "../../pages/Testimonial"
 import axios from "axios";
-import { Avatar, Grid, Paper, Typography, Card, CardContent, Box, Container } from '@mui/material';
+import { Box } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
+
 
 
 const Index = () => {
@@ -45,7 +46,7 @@ const Index = () => {
     uid ? 
 (        <Router>
         <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Feed />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/signup" element={<SignIn />} />
                 <Route path="/admin" element={<AdminPage />} />
@@ -64,6 +65,7 @@ const Index = () => {
                 <Route path="/feed" element={<SignIn />} />
                 <Route path="/searchUser" element={<SignIn />} />
                 <Route path="/profile/:userId" element={<SignIn />} />
+                <Route path="/testimonials" element={<Testimonial />} />
                 <Route path="/*" element={<Navigate replace to="/" />} /> 
         </Routes>
     </Router>)
