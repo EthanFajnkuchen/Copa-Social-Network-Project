@@ -1,0 +1,41 @@
+.testimonial-card .card-up {
+    height: 120px;
+    overflow: hidden;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+  }
+  .testimonial-card .avatar {
+    width: 110px;
+    margin-top: -60px;
+    overflow: hidden;
+    border: 3px solid #fff;
+    border-radius: 50%;
+  }
+
+  .main-container {
+    width: 100%;
+    position: absolute;
+    background: linear-gradient(
+      39deg,
+      #58aff1,
+      #2b5bbb,
+      #48055f,
+      #7cc0dd,
+      #2b5bbb
+    );
+    background-size: 600% 100%;
+    animation: gradient 10s linear infinite;
+    animation-direction: alternate;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+  }
+  
+  @keyframes gradient {
+    0% {
+      background-position: 0%;
+    }
+    100% {
+      background-position: 100%;
+    }
+  }

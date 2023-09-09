@@ -60,14 +60,9 @@ const Index = () => {
     (<Router>
         <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/profile" element={<SignIn />} />
                 <Route path="/signup" element={<SignIn />} />
-                <Route path="/admin" element={<SignIn />} />
-                <Route path="/feed" element={<SignIn />} />
-                <Route path="/searchUser" element={<SignIn />} />
-                <Route path="/profile/:userId" element={<SignIn />} />
                 <Route path="/readme" element={<Readme />} />
-                <Route path="/test" element={<Testimonial />} />
+                <Route path="/testimonials" element={<Testimonial />} />
                 <Route path="/*" element={<Navigate replace to="/" />} /> 
         </Routes>
     </Router>)

@@ -53,8 +53,8 @@ const Navbar = () => {
 
               {adminPages.page2 && (
                 <li className="nav-item">
-                  <a className="nav-link" href="/tournaments">
-                    Tournaments
+                  <a className="nav-link" href="/testimonials">
+                    Testimonials
                   </a>
                 </li>
               )}

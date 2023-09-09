@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import axios from 'axios';
-import "./../../styles/styleafter.css";
 import logo from "./../../images/logo-color.png"
 import { AppBar, Toolbar, Button, IconButton } from '@mui/material';
 import { Link } from 'react-router-dom';

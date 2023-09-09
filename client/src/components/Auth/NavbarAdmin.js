@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import axios from 'axios';
-import "./../../styles/styleafter.css";
 import logo from "./../../images/logo-color.png"
 import { AppBar, Toolbar, IconButton } from '@mui/material';
 import { Logout } from '@mui/icons-material';
