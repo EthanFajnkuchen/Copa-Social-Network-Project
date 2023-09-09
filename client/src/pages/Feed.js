@@ -13,7 +13,6 @@ import NavbarAfter from '../components/Auth/NavbarAfter';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import ReplyIcon from '@mui/icons-material/Reply';
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 
 const fetchUserByUsernameId = async (usernameId) => {
@@ -159,6 +158,13 @@ const handleCommentLikeToggle = async (postId, commentId) => {
 
 const handlePostComment = async (postId, commentContent) => {
   try {
+
+    if (commentContent.length > 300) {
+      alert("Your comment cannot exceed 300 characters.");
+      return;
+    }
+
+
     const response = await axios.post('http://localhost:5000/api/post/createcomment', {
       post_id: postId,
       username_id: uid,
@@ -263,6 +269,11 @@ const convertImageToBase64 = (imageFile) => {
 const handlePostCreation = async () => {
   try {
     // Convert the selected image to base64
+    if (newPostContent.length > 300) {
+      alert("Your post cannot exceed 300 characters.");
+      return;
+    }
+
     const imageBase64 = selectedImage ? await convertImageToBase64(selectedImage) : '';
     if (newPostContent === "" && !(selectedImage)) {
       return null;
@@ -397,15 +408,8 @@ return (
                           fullWidth
                           value={newCommentContent}
                           onChange={(e) => setNewCommentContent(e.target.value)}
-                          style={{ marginLeft: '10px' }}
+                          style={{ marginLeft: '10px', marginRight: '10px' }}
                         />
-                        <IconButton
-                          variant="outlined"
-                          style={{ color: "#969696" }}
-                          aria-label="post comment"
-                        >
-                          <PhotoCameraIcon />
-                        </IconButton>
                       <Button onClick={() => handlePostComment(post.post_id, newCommentContent)} variant="contained" color="primary" style={{textTransform: "capitalize"}}>Post</Button>
                           </div>
                     <div style={{marginTop: "20px"}}>

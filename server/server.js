@@ -99,9 +99,9 @@ app.post("/register", (req, res) => {
         "password": encrypted_password,
         "followers": [],
         "following": [],
-        "communities": [],
         "avatar": "",
-        "last_login": null
+        "last_login": null,
+        "last_logout": null
     }
 
     users.push(user);
@@ -210,44 +210,68 @@ app.patch("/api/unfollow/:followerId/:userId", (req, res) => {
 });
 
 
-function deleteUser(userId) {
-    const userIndex = users.findIndex(user => user.id === userId);
 
-    if (userIndex === -1) {
-        return false; // User not found
+  
+  // Function to write JSON to a file
+  const writeJsonToFile = (filename, data) => {
+    try {
+      const jsonString = JSON.stringify(data, null, 2);
+      fs.writeFileSync(filename, jsonString);
+    } catch (error) {
+      console.error(`Failed to write to file ${filename}. Error: ${error.message}`);
     }
+  };
+  
+  
+  // Endpoint to delete a user
+  app.delete('/api/delete/:userId', (req, res) => {
+    const userId = req.params.userId;
+    console.log("enter");
+    let rawData;
+    let posts;
+    try {
+      rawData = fs.readFileSync('./post.json');
+      posts = JSON.parse(rawData);
+    } catch (error) {
+      return res.status(500).json({ message: "Error reading posts data", error: error.message });
+    }
+      // 1. Delete the user from users.json
+  const userIndex = users.findIndex(user => user.id === userId);
+  if (userIndex === -1) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  users.splice(userIndex, 1);
+  writeJsonToFile('./users.json', users);
 
-    // Remove the deleted user from the "followers" list of other users
-    users.forEach(user => {
-        const followerIndex = user.following.indexOf(userId);
-        if (followerIndex !== -1) {
-            user.following.splice(followerIndex, 1);
-        }
+  // 2. Remove this user from the following/followers list of all other users
+  users.forEach(user => {
+    user.followers = user.followers.filter(id => id !== userId);
+    user.following = user.following.filter(id => id !== userId);
+  });
+  writeJsonToFile('./users.json', users);
+
+// 3. Delete all comments and likes by this user in all posts
+posts.posts.forEach(post => {
+    post.comments = post.comments.filter(comment => comment.username_id !== userId);
+    post.likes = post.likes.filter(id => id !== userId);
+    post.comments.forEach(comment => {
+      comment.likes = comment.likes.filter(id => id !== userId);
     });
+  });
 
-    users.splice(userIndex, 1);
-    return true;
-}
+  // 4. Delete all posts of this user
+  posts.posts = posts.posts.filter(post => post.username_id !== userId);
 
-app.delete("/api/delete/:userId", (req, res) => {
-    const { userId } = req.params;
+  // 5. Write updated posts back to the JSON file
+  try {
+    fs.writeFileSync('./post.json', JSON.stringify(posts, null, 2));
+  } catch (error) {
+    return res.status(500).json({ message: "Error writing to posts data", error: error.message });
+  }
 
-    if (!userId) {
-        return res.status(400).send("Missing userId.");
-    }
-
-    const isDeleted = deleteUser(userId);
-
-    if (isDeleted) {
-        fs.writeFile("users.json", JSON.stringify(users), err => {
-            if (err) throw err;
-            console.log("Done writing");
-            res.send("User deleted successfully.");
-        });
-    } else {
-        res.status(400).send("Unable to delete user.");
-    }
+  res.status(200).json({ message: "User deleted successfully" });
 });
+
 
 
 app.post("/api/user/login", (req, res) => {
@@ -322,7 +346,25 @@ app.patch("/api/user/avatar/:userId", (req, res) => {
 });
 
 
-app.get("/api/user/logout", (req,res) => {
+app.get("/api/user/logout/:uid", (req,res) => {
+    
+    const userId = req.params.uid;
+    console.log(userId);
+    const user = users.find(u => u.id === userId);
+
+    user.last_logout = new Date().toISOString();
+
+    // Save the updated user data to the JSON file
+    const usersWithoutUpdatedUser = users.filter(u => u.id !== user.id);
+    const updatedUsers = [...usersWithoutUpdatedUser, user];
+
+    fs.writeFile("users.json", JSON.stringify(updatedUsers, null, 2), err => {
+    if (err) {
+        console.error("Error writing to user.json:", err);
+        return res.status(500).send("Internal Server Error");
+    }
+    });
+
     res.cookie("token","",{maxAge: -1});
     res.status(200).json({ message: "Logout successful." });
 })
@@ -349,24 +391,7 @@ app.get("/api/user/:userId", (req, res) => {
 
 app.get('/users', (req, res) => {
   // Read the user data from the file every time the endpoint is called
-  fs.readFile('users.json', 'utf8', (err, data) => {
-    if (err) {
-      console.error('Error reading user file:', err);
-      return res.status(500).json({ error: 'Internal Server Error' });
-    }
-
-    const users = JSON.parse(data);
-
-    // Find the admin user by ID
-
-    // Exclude the admin user from the filtered users
-    const filteredUsers = users.filter(user => user.id !== '6acba3b3-b13c-49b7-b7b1-ac7174267c80');
-
-    // Include feature1 and feature2 fields from the admin user
-
-      res.json({ users: filteredUsers});
-
-  });
+  res.json(users);
 });
 
   
@@ -403,51 +428,60 @@ app.get("/api/user/:userId/following", (req, res) => {
     }
 });
 
-app.patch('/api/user/admin/changefeatures', (req, res) => {
+function saveUserDataToFile(users) {
+    const jsonUsers = JSON.stringify(users, null, 2);
+    fs.writeFileSync('users.json', jsonUsers);
+  }
 
-    const { feature1, feature2 } = req.body;
-    console.log(feature1, feature2);
-    // Load the users from the JSON file
-    const usersPath = path.join(__dirname, 'users.json');
-    const usersData = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
+app.put('/api/users/:id/toggle-feature/:featureName', (req, res) => {
+    const { id, featureName } = req.params;
+    console.log(id, featureName)
+    const user = users.find((u) => u.id === id);
+  
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
     
-    // Find the admin user in the data
-    const adminUserIndex = usersData.findIndex(user => user.id === '6acba3b3-b13c-49b7-b7b1-ac7174267c80');
   
-    if (adminUserIndex === -1) {
-      return res.status(404).json({ message: 'Admin user not found.' });
-    }
-  
-    // Update the admin user's features
-    if (feature1 !== undefined) {
-      usersData[adminUserIndex].feature1 = feature1;
-    }
-  
-    if (feature2 !== undefined) {
-      usersData[adminUserIndex].feature2 = feature2;
-
-    }
-  
-    // Write the updated data back to the JSON file
-    fs.writeFileSync(usersPath, JSON.stringify(usersData, null, 2), 'utf-8');
-  
-    res.status(200).json({ message: 'Admin features updated successfully.' });
+    user[featureName] = !user[featureName];
+    console.log(user);
+    saveUserDataToFile(users);
+    res.json(user);
   });
 
-app.get('/api/user/admin/getfeatures', (req, res) => {
-    const usersPath = path.join(__dirname, 'users.json');
-    const usersData = JSON.parse(fs.readFileSync(usersPath, 'utf-8'));
-  
-    const adminUser = usersData.find(user => user.id === '6acba3b3-b13c-49b7-b7b1-ac7174267c80');
+app.put('/api/users/:id/toggle-page/:pageName', (req, res) => {
+    const { id, pageName } = req.params;
+    console.log(id, pageName);
+
+    const user = users.find((u) => u.id === id);
+
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if the pageName is either 'page1' or 'page2'
+    if (!['page1', 'page2'].includes(pageName)) {
+        return res.status(400).json({ error: `Invalid pageName ${pageName}. Can only be 'page1' or 'page2'.` });
+    }
+
+    user[pageName] = !user[pageName];
+    console.log(user);
+
+    saveUserDataToFile(users);
+    res.json(user);
+});
+
+app.get('/api/user/admin/pages', (req, res) => {
+    const adminUser = users.find((user) => user.pseudo === 'admin');
   
     if (!adminUser) {
-      return res.status(404).json({ message: 'Admin user not found.' });
+      return res.status(404).json({ error: 'Admin not found' });
     }
   
-    const { feature1, feature2 } = adminUser;
-    res.json({ feature1, feature2 });
+    const { page1, page2 } = adminUser;
+    res.json({ page1, page2 });
   });
-    
+  
 
 
 
@@ -689,79 +723,6 @@ app.patch('/api/post/handlelikecomment', (req, res) => {
     res.json({ message: "Comment edited successfully!", comment: db.posts[postIndex].comments[commentIndex] });
 });
 
-app.patch('/api/post/editpost', (req,res) => {
-    const { post_id, description } = req.body;  // Use req.body instead of req.query if you're sending data in the request body
-
-    // Load current posts from the JSON file
-    let rawData;
-    let db;
-    try {
-        rawData = fs.readFileSync('./post.json');
-        db = JSON.parse(rawData);
-    } catch (error) {
-        return res.status(500).json({ message: "Error reading posts data", error: error.message });
-    }
-
-    // Find the post by its ID
-    const postIndex = db.posts.findIndex(post => post.post_id === post_id);
-    if (postIndex === -1) {
-        return res.status(404).json({ message: "Post not found" });
-    }
-
-    // Update the post's description
-    db.posts[postIndex].description = description;
-
-    // Optionally, you can also update other post details here as needed.
-
-    // Save the updated posts back to the JSON file
-    try {
-        fs.writeFileSync('./post.json', JSON.stringify(db, null, 2));
-    } catch (error) {
-        return res.status(500).json({ message: "Error writing to posts data", error: error.message });
-    }
-
-    res.json({ message: "Post edited successfully!", post: db.posts[postIndex] });
-});
-
-app.patch('/api/post/editcomment', (req, res) => {
-    const { post_id, comment_id, description } = req.body;
-
-    // Load current posts from the JSON file
-    let rawData;
-    let db;
-    try {
-        rawData = fs.readFileSync('./post.json');
-        db = JSON.parse(rawData);
-    } catch (error) {
-        return res.status(500).json({ message: "Error reading posts data", error: error.message });
-    }
-
-    // Find the post by its ID
-    const postIndex = db.posts.findIndex(post => post.post_id === post_id);
-    if (postIndex === -1) {
-        return res.status(404).json({ message: "Post not found" });
-    }
-
-    // Find the comment by its ID within the post
-    const commentIndex = db.posts[postIndex].comments.findIndex(comment => comment.comment_id === comment_id);
-    if (commentIndex === -1) {
-        return res.status(404).json({ message: "Comment not found" });
-    }
-
-    // Update the comment's description
-    db.posts[postIndex].comments[commentIndex].description = description;
-
-    // Optionally update other fields, such as last edited timestamp, if required.
-
-    // Save the updated posts back to the JSON file
-    try {
-        fs.writeFileSync('./post.json', JSON.stringify(db, null, 2));
-    } catch (error) {
-        return res.status(500).json({ message: "Error writing to posts data", error: error.message });
-    }
-
-    res.json({ message: "Comment edited successfully!", comment: db.posts[postIndex].comments[commentIndex] });
-});
 
 app.get("/api/postbyid/:userId", (req, res) => {
 const { userId } = req.params;
@@ -806,15 +767,6 @@ app.get("/api/post/feed/:userId", (req, res) => {
 });
     
 
-app.get("/api/post/allposts", (req, res) => {
-    const rawData = fs.readFileSync('./post.json');
-    const db = JSON.parse(rawData);
-
-    const allPosts = db.posts;
-
-    res.json({ allPosts });
-});
-
 app.get("/api/post/:postId/comments", (req, res) => {
     const { postId } = req.params;
 
@@ -831,202 +783,6 @@ app.get("/api/post/:postId/comments", (req, res) => {
     }
 });
 
-
-
-/****************************************************
- *                                                  *
- *               COMMUNITIES API                    *
- *                                                  *
- ****************************************************/
-
-const readJsonFile = (fileName) => {
-    return new Promise((resolve, reject) => {
-      fs.readFile(fileName, 'utf8', (err, data) => {
-        if (err) return reject(err);
-        resolve(JSON.parse(data || '[]'));
-      });
-    });
-  };
-  
-const writeJsonFile = (fileName, data) => {
-return new Promise((resolve, reject) => {
-    fs.writeFile(fileName, JSON.stringify(data), (err) => {
-    if (err) return reject(err);
-    resolve();
-    });
-});
-};
-
-app.post("/api/community/createcommunity", async (req, res) => {
-    try {
-        const { name, participant } = req.body;
-
-        if (!name || !participant) {
-        return res.status(400).json({ error: "Both name and an initial participant are required" });
-        }
-
-        const communities = await readJsonFile('communities.json');
-        const users = await readJsonFile('users.json');
-
-        const newId = uuidv4();
-        const newCommunity = {
-        id: newId,
-        name,
-        participants: [participant],
-        posts: []
-        };
-
-        const userIndex = users.findIndex(user => user.id === participant);
-        if (userIndex !== -1) {
-        users[userIndex].communities.push(newId);
-        }
-
-        communities.push(newCommunity);
-
-        await writeJsonFile('communities.json', communities);
-        await writeJsonFile('users.json', users);
-
-        return res.status(201).json(newCommunity);
-    } catch (err) {
-        return res.status(500).json({ error: "Server Error" });
-    }
-});
-
-app.patch("/api/community/adduser", async (req, res) => {
-    try {
-        const { communityId, userId } = req.body;
-
-        if (!communityId || !userId) {
-        return res.status(400).json({ error: "Both communityId and userId are required" });
-        }
-
-        const communities = await readJsonFile('communities.json');
-        const users = await readJsonFile('users.json');
-
-        const communityIndex = communities.findIndex(community => community.id === communityId);
-
-        if (communityIndex === -1) {
-        return res.status(404).json({ error: "Community not found" });
-        }
-
-        // Check if the user is already a part of the community
-        if (communities[communityIndex].participants.includes(userId)) {
-            return res.status(400).json({ error: "User is already a part of this community" });
-        }
-
-        communities[communityIndex].participants.push(userId);
-
-        const userIndex = users.findIndex(user => user.id === userId);
-        if (userIndex !== -1) {
-        users[userIndex].communities.push(communityId);
-        }
-
-        await writeJsonFile('communities.json', communities);
-        await writeJsonFile('users.json', users);
-
-        return res.status(200).json({ message: "User added successfully", community: communities[communityIndex] });
-    } catch (err) {
-        return res.status(500).json({ error: "Server Error" });
-    }
-});
-
-app.patch("/api/community/addpost", async (req, res) => {
-    try {
-      const { communityId, postId } = req.body;
-  
-      if (!communityId || !postId) {
-        return res.status(400).json({ error: "Both communityId and postId are required" });
-      }
-  
-      const communities = await readJsonFile('communities.json');
-  
-      const communityIndex = communities.findIndex(community => community.id === communityId);
-  
-      if (communityIndex === -1) {
-        return res.status(404).json({ error: "Community not found" });
-      }
-  
-      // Check if the post is already part of the community
-      if (communities[communityIndex].posts.includes(postId)) {
-        return res.status(400).json({ error: "Post is already part of this community" });
-      }
-  
-      communities[communityIndex].posts.push(postId);
-  
-      await writeJsonFile('communities.json', communities);
-  
-      return res.status(200).json({ message: "Post added successfully", community: communities[communityIndex] });
-    } catch (err) {
-      return res.status(500).json({ error: "Server Error" });
-    }
-});
-
-app.patch("/api/community/removeuser", async (req, res) => {
-    try {
-      const { communityId, userId } = req.body;
-  
-      if (!communityId || !userId) {
-        return res.status(400).json({ error: "Both communityId and userId are required" });
-      }
-  
-      const communities = await readJsonFile('communities.json');
-      const users = await readJsonFile('users.json');
-  
-      const communityIndex = communities.findIndex(community => community.id === communityId);
-  
-      if (communityIndex === -1) {
-        return res.status(404).json({ error: "Community not found" });
-      }
-  
-      // Check if the user is a part of the community
-      const userIndexInCommunity = communities[communityIndex].participants.indexOf(userId);
-      
-      if (userIndexInCommunity === -1) {
-        return res.status(400).json({ error: "User is not a part of this community" });
-      }
-  
-      // Remove the user from the community
-      communities[communityIndex].participants.splice(userIndexInCommunity, 1);
-  
-      // Remove the community from the user's list of communities
-      const userIndex = users.findIndex(user => user.id === userId);
-      if (userIndex !== -1) {
-        const communityIndexInUser = users[userIndex].communities.indexOf(communityId);
-        if (communityIndexInUser !== -1) {
-          users[userIndex].communities.splice(communityIndexInUser, 1);
-        }
-      }
-  
-      await writeJsonFile('communities.json', communities);
-      await writeJsonFile('users.json', users);
-  
-      return res.status(200).json({ message: "User removed successfully", community: communities[communityIndex] });
-    } catch (err) {
-      return res.status(500).json({ error: "Server Error" });
-    }
-});
-
-app.get("/api/community/searchbyId/:id", async (req, res) => {
-    try {
-      const { id } = req.params; // Extracting the community ID from request parameters
-      if (!id) {
-        return res.status(400).json({ error: "Community ID is required" });
-      }
-  
-      const communities = await readJsonFile('communities.json'); // Reading the communities.json file
-      const community = communities.find(community => community.id === id); // Find the community by its ID
-  
-      if (!community) {
-        return res.status(404).json({ error: "Community not found" });
-      }
-  
-      return res.status(200).json({ community }); // Return the community object if found
-  
-    } catch (err) {
-      return res.status(500).json({ error: "Server Error" });
-    }
-  });
-  
   
 
 /****************************************************

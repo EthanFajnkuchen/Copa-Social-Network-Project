@@ -21,6 +21,7 @@
     "crypto-js": "^4.1.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.1",
+    "mdb-react-ui-kit": "^6.2.0",
     "styled-components": "^5.3.11",
     "uuid": "^9.0.0"
   }

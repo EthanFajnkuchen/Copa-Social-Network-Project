@@ -7,7 +7,6 @@ import axios from 'axios';
 import CircularProgress from '@mui/material/CircularProgress';
 import NavbarAfter from '../components/Auth/NavbarAfter';
 import moment from 'moment';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import IconButton from '@mui/material/IconButton';
 import { red } from '@mui/material/colors';
 import DeleteIcon from '@mui/icons-material/Delete';

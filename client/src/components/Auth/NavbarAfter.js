@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import axios from 'axios';
 import "./../../styles/styleafter.css";
 import logo from "./../../images/logo-color.png"
-import { AppBar, Toolbar, Typography, TextField, Button, IconButton } from '@mui/material';
+import { AppBar, Toolbar, Button, IconButton } from '@mui/material';
 import { Link } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
-import LogoutIcon from '@mui/icons-material/Logout';
 import { Logout } from '@mui/icons-material';
 import { UidContext } from '../Log/AppContext';
 import cookie from "js-cookie";
-import Autocomplete from '@mui/material/Autocomplete';
 
 
 
 const NavbarAfter = () => {
+
+    const uid = useContext(UidContext);
 
     const removeCookie = (key) => {
         if (window !== "undefined") {
@@ -22,9 +22,11 @@ const NavbarAfter = () => {
     };
 
     const handleLogout = async () => {
+        const logoutUrl = `http://localhost:5000/api/user/logout/${uid}`;
+
         await axios({
             method: "get",
-            url: `http://localhost:5000/api/user/logout`,
+            url: logoutUrl,
             withCredentials: true,
         })
             .then(() => removeCookie("token"))
@@ -68,6 +70,8 @@ const NavbarAfter = () => {
                     <IconButton
                         style={{
                             color: '#549BFF',
+                            outline: "none",
+
                             '&:hover': {
                                 backgroundColor: 'rgba(0, 0, 0, 0.1)',
                             },

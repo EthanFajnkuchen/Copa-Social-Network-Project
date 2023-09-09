@@ -7,7 +7,6 @@ import axios from 'axios';
 import CircularProgress from '@mui/material/CircularProgress';
 import NavbarAfter from '../components/Auth/NavbarAfter';
 import moment from 'moment';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import IconButton from '@mui/material/IconButton';
 import { red } from '@mui/material/colors';
 import Button from '@mui/material/Button';
@@ -147,6 +146,7 @@ const ProfileOther = () => {
                             <Typography variant="body1" style={{ marginTop: '20px', color: "#585757", fontSize: "14px", fontFamily: "Roboto", marginLeft: "32px" }}>
                                 {post.description}
                             </Typography>
+                            {post.images && <img src={post.images} alt="Post" style={{marginTop: '15px',marginBottom: '15px' }} />}
 
                             <div style={{ marginTop: '20px' }}>
                                 <IconButton  onClick={() => handleLikeToggle(post.post_id)} style={post.likes.includes(uid) > 0 ? { color: red[500] , marginLeft: "23px", outline: "none"} : {marginLeft: "23px", outline: "none"}}aria-label="like post">
