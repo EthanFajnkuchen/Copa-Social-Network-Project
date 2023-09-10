@@ -73,7 +73,6 @@ const UserList = () => {
       .put(togglePageUrl, null, { headers: customHeaders })
       .then((response) => {
         console.log(`Page ${pageName} toggled successfully`);
-        console.log(response);
         setUsersW((prevUsers) => {
           return prevUsers.map((user) => {
             if (user.id === userId) {

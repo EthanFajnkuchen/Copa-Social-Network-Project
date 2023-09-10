@@ -85,7 +85,7 @@ const Testimonial = () =>  {
               <hr />
               <p className="dark-grey-text mt-4">
                 <MDBIcon fas icon="quote-left" className="pe-2" />
-                "Whether it's tailgate tips or play-by-play breakdowns, I know I can count on the Copa community for valuable insights. It's made my fan experience much richer.
+                Whether it's tailgate tips or play-by-play breakdowns, I know I can count on the Copa community for valuable insights. It's made my fan experience much richer.
               </p>
             </MDBCardBody>
           </MDBCard>

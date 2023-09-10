@@ -97,7 +97,6 @@ const Profile = () => {
         },
         })
         .then(response => {
-          console.log(response.data);
           // Remove the deleted post from the userPosts state
           const updatedPosts = userPosts.filter(post => post.post_id !== postId);
           setUserPosts(updatedPosts);
@@ -115,7 +114,6 @@ const Profile = () => {
           }, {
             headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
           });
-          console.log(response);
     
           if (response.status === 200) {
             // Update the userPosts state with the updated post
@@ -168,9 +166,7 @@ const Profile = () => {
     
     const handleSaveProfilePicture = async () => {
         try {
-            const base64Avatar = user.avatar; // Get the base64 representation of the image
-            console.log(user.avatar);
-            
+            const base64Avatar = user.avatar; // Get the base64 representation of the image            
             // Send Axios PATCH request to update user's avatar
             const response = await axios.patch(`http://localhost:5000/api/user/avatar/${uid}`, {
                 avatar: base64Avatar

@@ -12,6 +12,7 @@ import axios from "axios";
 import { Box } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import Readme from '../../pages/ReadMe';
+import Standing from "../../pages/Standing";
 
 
 
@@ -63,6 +64,7 @@ const Index = () => {
                 <Route path="/signup" element={<SignIn />} />
                 <Route path="/readme" element={<Readme />} />
                 <Route path="/testimonials" element={<Testimonial />} />
+                <Route path="/standing" element={<Standing />} />
                 <Route path="/*" element={<Navigate replace to="/" />} /> 
         </Routes>
     </Router>)

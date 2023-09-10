@@ -13,8 +13,8 @@ function Readme() {
 
                 <h2 style={{marginTop:"20px"}}>Additional Pages Added:</h2>
                 <p>We added the following additional pages:</p>
-                <p>1. Tournaments</p>
-                <p>2. Contact Us</p>
+                <p>1. Standings</p>
+                <p>2. Testimonials</p>
 
                 <h2>Additional Features Added:</h2>
                 <p>We added the following additional features:</p>

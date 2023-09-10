@@ -1,13 +1,16 @@
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const path = require('path');
+require('dotenv').config({path: './../config/.env'});
 const https = require('https');
 const app = express();
 const jwt = require('jsonwebtoken');
 app.use(express.static("client/public"))
 const users = require("./users.json");
 const fs = require("fs");
+const moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
 const cryptoJS = require('crypto-js');
 app.use(bodyParser.json({limit: '10mb'}))
@@ -19,8 +22,8 @@ app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true
 }));
-const KEY = "ASECRET";
-const SECRET_KEY = "TOKEN_SECRET_AUTH";
+const connectedUsers = {};
+
 
 
 
@@ -33,7 +36,7 @@ const SECRET_KEY = "TOKEN_SECRET_AUTH";
 app.get("*", (req,res,next) => {
     const token = req.cookies.token;
     if (token) {
-        jwt.verify(token, SECRET_KEY, (err, decodedToken) => {
+        jwt.verify(token, process.env.SECRET_KEY, (err, decodedToken) => {
             if (err) {
                 res.locals.user = null;
                 res.cookie('token',"", {maxAge: 1});
@@ -53,12 +56,12 @@ app.get("*", (req,res,next) => {
 app.get("/jwtid", (req,res,next) => {
     const token = req.cookies.token;
     if (token) {
-        jwt.verify(token, SECRET_KEY, (err, decodedToken) => {
+        jwt.verify(token, process.env.SECRET_KEY, (err, decodedToken) => {
             if (err) {
                 console.log(err);
                 res.send(200).json('no token')
             } else {
-                console.log(decodedToken.userId);
+                connectedUsers[decodedToken.userId] = new Date(decodedToken.exp * 1000);
                 //next();
                 res.status(200).send(res.locals.user.id)
 
@@ -67,7 +70,30 @@ app.get("/jwtid", (req,res,next) => {
         });
     } else {
         console.log("No token");
+        const now = new Date();
+        for (const [userId, expDate] of Object.entries(connectedUsers)) {
+            if (expDate < now) {
+                const user = users.find(u => u.id === userId);
+
+                user.last_logout = expDate;
+
+                // Save the updated user data to the JSON file
+                const usersWithoutUpdatedUser = users.filter(u => u.id !== user.id);
+                const updatedUsers = [...usersWithoutUpdatedUser, user];
+
+                fs.writeFile("users.json", JSON.stringify(updatedUsers, null, 2), err => {
+                if (err) {
+                    console.error("Error writing to user.json:", err);
+                    return res.status(500).send("Internal Server Error");
+                }
+                });
+                delete connectedUsers[userId];
+                console.log(`Removed expired user: ${userId}`);
+            }
+        }
+
         res.status(200).send(false);
+
     }
 });
 
@@ -75,7 +101,7 @@ app.post("/register", (req, res) => {
     const { firstName, lastName, email, pseudo, password } = req.body;
     console.log(firstName, lastName, email, pseudo, password);
 
-    const encrypted_password = cryptoJS.AES.encrypt(password, KEY).toString();
+    const encrypted_password = cryptoJS.AES.encrypt(password, process.env.KEY).toString();
 
     const existingEmail = users.find(user => user.email === email);
     const existingPseudo = users.find(user => user.pseudo === pseudo);
@@ -229,12 +255,23 @@ app.patch("/api/unfollow/:followerId/:userId", (req, res) => {
     console.log("enter");
     let rawData;
     let posts;
+    let rawDataStory;
+    let stories;
     try {
       rawData = fs.readFileSync('./post.json');
       posts = JSON.parse(rawData);
     } catch (error) {
       return res.status(500).json({ message: "Error reading posts data", error: error.message });
     }
+
+    
+
+    try {
+        rawDataStory = fs.readFileSync('./stories.json');
+        stories = JSON.parse(rawDataStory);
+      } catch (error) {
+        return res.status(500).json({ message: "Error reading posts data", error: error.message });
+      } 
       // 1. Delete the user from users.json
   const userIndex = users.findIndex(user => user.id === userId);
   if (userIndex === -1) {
@@ -269,8 +306,21 @@ posts.posts.forEach(post => {
     return res.status(500).json({ message: "Error writing to posts data", error: error.message });
   }
 
+
+
+// 6. Delete Stories and update stories.json
+
+stories.stories = stories.stories.filter( story => story.user_id !== userId);
+console.log(stories);
+try {
+    fs.writeFileSync('./stories.json', JSON.stringify(stories, null, 2));
+  } catch (error) {
+    return res.status(500).json({ message: "Error writing to posts data", error: error.message });
+  } 
+  
   res.status(200).json({ message: "User deleted successfully" });
 });
+
 
 
 
@@ -284,14 +334,14 @@ app.post("/api/user/login", (req, res) => {
         return res.status(401).send("Invalid credentials.");
     }
 
-    const decryptedPassword = cryptoJS.AES.decrypt(user.password, KEY).toString(cryptoJS.enc.Utf8);
+    const decryptedPassword = cryptoJS.AES.decrypt(user.password, process.env.KEY).toString(cryptoJS.enc.Utf8);
     if (decryptedPassword !== password) {
         return res.status(401).send("Invalid credentials.");
     }
 
     const tokenExpiration = (rememberMe === "true") ? "10d" : "30m";
 
-    const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: tokenExpiration });
+    const token = jwt.sign({ userId: user.id }, process.env.SECRET_KEY , { expiresIn: tokenExpiration });
 
     user.last_login = new Date().toISOString();
 
@@ -364,6 +414,14 @@ app.get("/api/user/logout/:uid", (req,res) => {
         return res.status(500).send("Internal Server Error");
     }
     });
+
+    for (const [userId, expDate] of Object.entries(connectedUsers)) {
+        if (user.id === userId) {
+            delete connectedUsers[userId];
+            console.log(`Removed expired user: ${userId}`);
+        }
+    }
+
 
     res.cookie("token","",{maxAge: -1});
     res.status(200).json({ message: "Logout successful." });
@@ -783,6 +841,129 @@ app.get("/api/post/:postId/comments", (req, res) => {
     }
 });
 
+
+/****************************************************
+ *                                                  *
+ *                    Story API                    *
+ *                                                  *
+ ****************************************************/
+
+
+function readfromstorydb(response) {
+    let rawData;
+    let db;
+    try {
+        rawData = fs.readFileSync('./stories.json', 'utf-8');
+        db = JSON.parse(rawData);
+        console.log("DB contents: ", db);  // Log the content
+    } catch (error) {
+        return response.status(500).json({ message: "Error reading story data", error: error.message });
+    }
+
+    // Check if the stories property exists on the db object
+    if (!db || !Array.isArray(db.stories)) {
+        return response.status(404).json({ message: "stories not found" });
+    }
+    return [db, rawData];
+}
+function savetostorydb(response, db) {
+    try {
+        fs.writeFileSync('./stories.json', JSON.stringify(db, null, 2));
+    } catch (error) {
+        return response.status(500).json({ message: "Error writing to posts data", error: error.message });
+    }
+}
+app.get('/api/story/getstories/:id', (req, res) => {
+    const id = req.params.id;
+    let output = readfromstorydb(res);
+    let db = output[0];
+    let rawData = output[1];
+
+    // Filter stories based on whether the story's user_id matches the id from params
+    const userstories = db.stories.filter(story => id === story.user_id);
+    res.json({ message: "story retrieved successfully!", stories: userstories });
+});
+
+app.get('/api/story/getallstories', (req, res) => {
+    let output = readfromstorydb(res);
+    let db = output[0];
+    let rawData = output[1];
+    res.json({ message: "story retrieved successfully!", stories: db.stories });
+});
+
+app.post('/api/story/addstories', (req, res) => {
+    const { user_id, image } = req.body;
+
+    const newImage = {
+        date_create: new Date().toISOString(),
+        image: image,
+    };
+
+    try {
+        const rawData = fs.readFileSync('./stories.json', 'utf-8');
+        const db = JSON.parse(rawData);
+
+        if (db && Array.isArray(db.stories)) {
+            const existingUserIndex = db.stories.findIndex(story => story.user_id === user_id);
+
+            if (existingUserIndex >= 0) {
+                db.stories[existingUserIndex].images.push(newImage);
+            } else {
+                db.stories.push({
+                    user_id: user_id,
+                    images: [newImage]
+                });
+            }
+
+            fs.writeFileSync('./stories.json', JSON.stringify(db, null, 2));
+            res.json({ message: "Story created successfully!" });
+        } else {
+            res.status(400).json({ message: "Invalid data format in stories.json" });
+        }
+    } catch (err) {
+        res.status(500).json({ message: "An error occurred", error: err.toString() });
+    }
+});
+app.delete('/api/story/deletestories/:id', (req, res) => {
+    const id = req.params.id;
+    let output = readfromstorydb(res); // Assume this is synchronous and returns [db, rawData]
+    let db = output[0];
+    if (!db) {
+        return res.status(404).json({ message: "Story not found" });
+    }
+
+    const storyIndex = db.stories.findIndex(user => user.user_id === id );
+
+    if (storyIndex === -1) {
+        return res.status(404).json({ message: "Story not found" });
+    }
+
+    // Get the current story object
+    let currentStory = db.stories[storyIndex];
+
+    // Get the current time
+    let currentTime = moment();
+
+    // Filter images that are older than 24 hours
+    currentStory.images = currentStory.images.filter(image => {
+        let imageTime = moment(image.date_create);
+        return currentTime.diff(imageTime, 'hours') <= 24;
+    });
+
+    // Remove stories with no images
+    db.stories = db.stories.filter(story => story.images.length > 0);
+
+    try {
+        savetostorydb(res, db);
+    } catch (error) {
+        return res.status(500).json({ message: "Failed to save the updated story", error: error.message });
+    }
+
+    // Check if the story still exists after the filter operation
+    const updatedStory = db.stories.find(user => user.user_id === id);
+
+    res.json({ message: "Images older than 24 hours and empty stories deleted successfully!", updatedStory: updatedStory });
+});
   
 
 /****************************************************

@@ -14,6 +14,7 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import ReplyIcon from '@mui/icons-material/Reply';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import Stories from '../components/Auth/FeedStories/Stories';
 
 const fetchUserByUsernameId = async (usernameId) => {
   try {
@@ -71,7 +72,6 @@ const Feed = () => {
       }, {
         headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
       });
-      console.log(response);
 
       if (response.status === 200) {
         // Update the userPosts state with the updated post
@@ -208,7 +208,6 @@ const handleDeletePost = (postId) => {
   },
   })
   .then(response => {
-    console.log(response.data);
     // Remove the deleted post from the userPosts state
     const updatedPosts = feedPosts.filter(post => post.post_id !== postId);
     setFeedPosts(updatedPosts);
@@ -289,7 +288,6 @@ const handlePostCreation = async () => {
     });
 
     if (response.status === 200) {
-      console.log("Reussi");
       // Clear the selected image state
       setSelectedImage(null);
       // Clear the post content input
@@ -314,9 +312,10 @@ const handlePostCreation = async () => {
 return (
   <div style={{ backgroundColor: "#F7F8FA" }}>
     <NavbarAfter />
+    <Stories />
     <Container style={{ marginTop: '15px', boxShadow: 'none' }}>
       <Grid container spacing={3}>
-        <Grid item xs={12} sm={8} style={{ marginTop: '3rem', boxShadow: 'none' }}>
+        <Grid item xs={12} sm={8} style={{ boxShadow: 'none' }}>
           <Paper elevation={0}>
             {/* Post creation form */}
             <Card style={{ marginBottom: '20px', boxShadow: 'none', padding: '20px' }}>

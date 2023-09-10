@@ -29,7 +29,6 @@ const ProfileOther = () => {
         axios.get(`http://localhost:5000/api/user/${userId}`)
             .then(response => {
                 setUser(response.data.user);
-                console.log(user.avatar);
                 return axios.get(`http://localhost:5000/api/postbyid/${userId}`);
             })
             .then(response => {
@@ -92,7 +91,6 @@ const ProfileOther = () => {
           }, {
             headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
           });
-          console.log(response);
     
           if (response.status === 200) {
             // Update the userPosts state with the updated post

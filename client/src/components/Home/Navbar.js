@@ -45,8 +45,8 @@ const Navbar = () => {
 
               {adminPages.page1 && (
                 <li className="nav-item">
-                  <a className="nav-link" href="/about-us">
-                    About Us
+                  <a className="nav-link" href="/standing">
+                    Standings
                   </a>
                 </li>
               )}
