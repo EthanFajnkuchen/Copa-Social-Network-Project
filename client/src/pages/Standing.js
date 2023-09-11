@@ -27,7 +27,7 @@ const LeagueFeed = () => {
             <Container>
                 <Paper elevation={3} style={{ padding: '20px', borderRadius: '8px', marginBottom: '20px' }}>
                     <Typography variant="body1">
-                        Choose one of the countries that you want to display their league state
+                        Choose one of the countries whose league state you want to display.
                     </Typography>
                     <Box display="flex" flexDirection="row" flexWrap="wrap">
                         {leagues.map((league) => (
